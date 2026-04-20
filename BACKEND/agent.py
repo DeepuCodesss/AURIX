@@ -166,7 +166,7 @@ def start_input_listeners():
 # Set before running (or in Windows env): AURIX_SERVER = your FastAPI base URL (no trailing /)
 # Tray "Open Dashboard": AURIX_DASHBOARD_URL = your deployed Vite/React site URL
 # CLI: python agent.py --server https://api.example.com
-AGENT_VERSION = "1.0.0"
+AGENT_VERSION = "1.0.1"
 DEFAULT_SERVER = os.environ.get("AURIX_SERVER", "https://aurix-rgpt.onrender.com").rstrip("/")
 DASHBOARD_URL = os.environ.get("AURIX_DASHBOARD_URL", "https://aurix-sepia.vercel.app").rstrip("/")
 HEARTBEAT_INTERVAL = 5  # seconds
@@ -864,13 +864,53 @@ def run_background_loop(server):
                 logging.critical("Agent gave up after max retries.")
 
 def open_ui():
-    """Opens the web dashboard (AURIX_DASHBOARD_URL)."""
+    """Opens a native UI message box and optionally the web dashboard."""
     try:
+        import tkinter as tk
+        root = tk.Tk()
+        root.title("AURIX System Status")
+        root.geometry("380x160")
+        root.configure(bg="#0B0F19")
+        
+        # Center on screen
+        root.update_idletasks()
+        width = root.winfo_width()
+        height = root.winfo_height()
+        x = (root.winfo_screenwidth() // 2) - (width // 2)
+        y = (root.winfo_screenheight() // 2) - (height // 2)
+        root.geometry(f'{width}x{height}+{x}+{y}')
+        
+        # Title Label
+        title = tk.Label(root, text="🛡️ AURIX KERNEL ACTIVE", fg="#00FF88", bg="#0B0F19", font=("Segoe UI", 16, "bold"))
+        title.pack(pady=(20, 5))
+        
+        # Status Label
+        sub = tk.Label(root, text="Your device is fully protected by AURIX telemetry.", fg="#8B949E", bg="#0B0F19", font=("Segoe UI", 10))
+        sub.pack()
+        
+        # Button
+        def go_to_cloud():
+            root.destroy()
+            import webbrowser
+            if DASHBOARD_URL:
+                webbrowser.open(DASHBOARD_URL)
+                
+        btn = tk.Button(root, text="OPEN DASHBOARD", command=go_to_cloud, bg="#1F2937", fg="white", font=("Segoe UI", 9, "bold"), relief="flat", activebackground="#374151", activeforeground="white", width=20, cursor="hand2")
+        btn.pack(pady=(15, 20))
+        
+        # Bring to front
+        root.lift()
+        root.attributes('-topmost', True)
+        root.after_idle(root.attributes, '-topmost', False)
+        
+        root.mainloop()
+
+    except Exception as e:
+        logging.error(f"UI Error: {e}")
+        # Fallback to browser
         import webbrowser
         if DASHBOARD_URL:
             webbrowser.open(DASHBOARD_URL)
-    except Exception:
-        pass
 
 def on_ui_click(icon, item):
     """Spawns the UI securely without blocking the primary tray icon."""

@@ -235,12 +235,16 @@ export class RobotManager {
             const eye = new THREE.Mesh(
                 new THREE.CircleGeometry(0.12, 32),
                 new THREE.MeshBasicMaterial({
-                    color: 0x050505,
-                    side: THREE.DoubleSide
+                    color: 0x00f6ff,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.9,
+                    blending: THREE.AdditiveBlending
                 })
             );
 
-            eye.position.set(x, 0.045, 0.84);
+            // Z moved forward to 0.92 so eyes are not stuffed inside the head
+            eye.position.set(x, 0.045, 0.92);
             eye.renderOrder = 30;
             this.bones.head.add(eye);
             this.eyeDots.push(eye);

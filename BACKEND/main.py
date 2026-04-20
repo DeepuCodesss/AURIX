@@ -177,7 +177,7 @@ async def agent_get_commands(device_id: str):
 async def agent_version():
     """Agent polls this to check if there is a newer version available."""
     return {
-        "version": "1.0.0",
+        "version": "1.0.1",
         "download_url": "https://aurix-sepia.vercel.app/AURIX-Agent.exe"
     }
 
