@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURIX — AI Cyber Defense</title>
+
+    <!-- Professional Typography -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <!-- CUSTOM CURSOR -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- NO LOADER / PROGRESS BAR -->
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo">AURIX</div>
+        <ul class="nav-links">
+            <li><a href="#s1">System</a></li>
+            <li><a href="#s2">Threat</a></li>
+            <li><a href="#s3">Defense</a></li>
+            <li><a href="#s5">Activate</a></li>
+        </ul>
+        <div class="nav-actions" style="display:flex; gap: 15px;">
+            <a class="cta-btn small-btn" href="#"><span>DOWNLOAD</span></a>
+            <a class="cta-btn small-btn outline" href="#"><span>SIGN IN</span></a>
+        </div>
+        <div class="nav-status">
+            <div class="nav-dot"></div><span>ONLINE</span>
+        </div>
+    </nav>
+
+    <!-- FIXED HUD FILLERS -->
+    <div class="fixed-hud left">
+        <div class="hud-line vertical"></div>
+        <div class="hud-text">SYS.VER.4.1 // NEURAL SEC</div>
+    </div>
+    <div class="fixed-hud right">
+        <div class="hud-circle-wrap">
+            <svg viewBox="0 0 100 100" class="hud-circle">
+                <circle cx="50" cy="50" r="45" />
+                <circle cx="50" cy="50" r="35" stroke-dasharray="10 5" />
+                <circle cx="50" cy="50" r="25" stroke-dasharray="2 10" />
+            </svg>
+        </div>
+        <div class="hud-line vertical"></div>
+        <div class="hud-text">TARGET ALIGNED</div>
+    </div>
+
+    <!-- 3D CANVAS & BACKGROUND -->
+    <canvas id="canvas3d"></canvas>
+    <div id="grid-bg"></div>
+    <canvas id="particles"></canvas>
+
+    <!-- SCROLL CONTAINER -->
+    <div id="scroll-container">
+
+        <!-- Section 1: Hero -->
+        <section class="section" id="s1">
+            <div class="bg-watermark">DEFENSE</div>
+            <div class="bracket tl"></div>
+            <div class="bracket tr"></div>
+            <div class="bracket bl"></div>
+            <div class="bracket br"></div>
+            <div class="section-inner">
+                <div class="brand-hero">NEXT-GEN AI CYBER DEFENSE</div>
+                <h1 class="brand-main glitch" data-text="AURIX">AURIX</h1>
+                <p class="brand-tagline">AI that predicts and stops cyber attacks before they happen. Born from the
+                    frontier of machine intelligence, forged for the digital battlefield.</p>
+                <a class="cta-btn" href="#s2"><span>INITIALIZE SYSTEM</span> <span>→</span></a>
+
+                <div class="hud-panel visible" style="opacity:1;transform:none;margin-top:40px">
+                    <div class="hud-row"><span class="hud-key">THREAT MODEL</span><span class="hud-val">Predictive
+                            Neural v4.1</span>
+                        <div class="hud-dot"></div>
+                    </div>
+                    <div class="hud-row"><span class="hud-key">STATUS</span><span class="hud-val">Awakening...</span>
+                        <div class="hud-dot red"></div>
+                    </div>
+                    <div class="hud-row"><span class="hud-key">UPTIME</span><span class="hud-val"
+                            id="uptime-val">00:00:00</span>
+                        <div class="hud-dot"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-line"></div>
+        </section>
+
+        <!-- Section 2: Predictive Intelligence -->
+        <section class="section" id="s2">
+            <div class="bg-watermark">PREDICT</div>
+            <div class="section-inner right glass-panel">
+                <div class="section-label" data-anim>PREDICTIVE INTELLIGENCE</div>
+                <h2 class="section-title" data-anim>HEURISTIC<br>VECTOR<br><span class="accent-r">ANALYSIS</span></h2>
+                <p class="section-body" data-anim>Processing 2.4 Petabytes of telemetry per second. AURIX doesn't just
+                    block—it learns the attacker's intent, simulating millions of breach scenarios before they manifest
+                    in reality.</p>
+                <div class="hud-panel" data-anim>
+                    <div class="hud-row"><span class="hud-key">PACKET DEPTH</span><span class="hud-val">L7 Deep
+                            Inspection</span>
+                        <div class="hud-dot"></div>
+                    </div>
+                    <div class="hud-row"><span class="hud-key">ANOMALIES</span><span class="hud-val" id="threat-count">0
+                            intercepted</span>
+                        <div class="hud-dot red"></div>
+                    </div>
+                    <div class="hud-row"><span class="hud-key">CONFIDENCE</span><span class="hud-val">99.982%</span>
+                        <div class="hud-dot"></div>
+                    </div>
+                </div>
+                <div class="scan-wrap" data-anim>
+                    <div class="scan-line"></div>
+                </div>
+            </div>
+            <div class="section-line"></div>
+        </section>
+
+        <!-- Section 3: Defense Architecture -->
+        <section class="section" id="s3">
+            <div class="bg-watermark">ARCH</div>
+            <div class="bracket tl"></div>
+            <div class="bracket tr"></div>
+            <div class="bracket bl"></div>
+            <div class="bracket br"></div>
+            <div class="section-inner glass-panel">
+                <div class="section-label" data-anim>DEFENSE ARCHITECTURE</div>
+                <h2 class="section-title" data-anim>KINETIC<br><span class="accent-b">ENCRYPTION</span><br>SHIELD</h2>
+                <p class="section-body" data-anim>Deploying virtualized honey-nets and adaptive polymorphic armor. AURIX
+                    constantly reconfigures your network's fingerprint, making you an invisible target in the digital
+                    dark.</p>
+                <div class="stat-grid" data-anim>
+                    <div class="stat-card">
+                        <div class="stat-num" style="color:var(--neon-blue)">0.08ms</div>
+                        <div class="stat-label">Neural Reaction</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" style="color:var(--neon-purple)">Exa</div>
+                        <div class="stat-label">Scale Capacity</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" style="color:var(--neon-red)">Zero</div>
+                        <div class="stat-label">Trust Policy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" style="color:var(--neon-cyan)">∞</div>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-line"></div>
+        </section>
+
+        <!-- Section 4: Adaptive Countermeasures -->
+        <section class="section" id="s4">
+            <div class="bg-watermark">TACTICS</div>
+            <div class="section-inner right glass-panel">
+                <div class="section-label" data-anim>ADAPTIVE COUNTERMEASURES</div>
+                <h2 class="section-title" data-anim>NEURAL<br>RECEPTOR<br><span class="accent-p">TACTICS</span></h2>
+                <p class="section-body" data-anim>Autonomous counterstrike protocols. When a threat is detected, AURIX
+                    doesn't just defend—it intercepts and neutralizes the origin point with surgically precise feedback
+                    loops.</p>
+                <div class="hud-panel" data-anim>
+                    <div class="hud-row"><span class="hud-key">COUNTER-MODE</span><span class="hud-val">Active
+                            Aggression</span>
+                        <div class="hud-dot"></div>
+                    </div>
+                    <div class="hud-row"><span class="hud-key">TRACE SPEED</span><span
+                            class="hud-val">Near-Instant</span>
+                        <div class="hud-dot"></div>
+                    </div>
+                    <div class="hud-row"><span class="hud-key">BIOMETRIC LINK</span><span class="hud-val">SECURE</span>
+                        <div class="hud-dot red"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-line"></div>
+        </section>
+
+        <!-- Section 5: Global Activation -->
+        <section class="section" id="s5" style="flex-direction:column">
+            <div class="bg-watermark" style="font-size:clamp(12rem,25vw,35rem);color:rgba(255,34,68,0.015);">CORE</div>
+            <div class="final-glow"></div>
+            <div class="section-inner center">
+                <div class="section-label" data-anim style="text-align:center">GLOBAL ACTIVATION PROTOCOL</div>
+                <h2 class="section-title" data-anim style="text-align:center;font-size:clamp(2rem,5vw,4.5rem)">
+                    <span class="accent-r">AURIX</span>
+                </h2>
+                <p class="section-body" data-anim style="margin:0 auto;text-align:center;max-width:550px">The era of
+                    reactive security is over. Deploy the prophetic core today and secure your existence in the
+                    post-quantum landscape.</p>
+                <div class="stat-grid" data-anim
+                    style="max-width:520px;margin:28px auto 0;grid-template-columns:repeat(2,1fr)">
+                    <div class="stat-card">
+                        <div class="stat-num" style="color:var(--neon-red)">100%</div>
+                        <div class="stat-label">Neural Native</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" style="color:var(--neon-blue)">Zero</div>
+                        <div class="stat-label">Day Immunity</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" style="color:var(--neon-purple)">Exa-Bit</div>
+                        <div class="stat-label">Encryption</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" style="color:var(--neon-cyan)">∞</div>
+                        <div class="stat-label">System Integrity</div>
+                    </div>
+                </div>
+                <div style="margin-top:54px;opacity:0;transform:translateY(20px);transition:opacity .7s .5s,transform .7s .5s"
+                    data-anim>
+                    <a class="cta-btn" href="#s1"
+                        style="font-size:.82rem;padding:20px 52px;background:rgba(255, 34, 68, 0.05);border-color:rgba(255, 34, 68, 0.3)"><span>DEACTIVATE
+                            VULNERABILITY</span></a>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- UI ELEMENTS -->
+    <div class="scroll-hint" id="scroll-hint">
+        <div class="scroll-hint-text">SCROLL</div>
+        <div class="scroll-hint-arrow"></div>
+    </div>
+
+    <!-- AUDIO TOGGLE -->
+    <button id="audio-btn" title="Toggle Sound">
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,200,255,0.7)" stroke-width="1.5">
+            <path d="M11 5L6 9H2v6h4l5 4V5z" />
+            <path id="aw1" d="M15.54 8.46a5 5 0 010 7.07" />
+            <path id="aw2" d="M19.07 4.93a10 10 0 010 14.14" />
+        </svg>
+    </button>
+
+    <!-- Main Entry Point -->
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

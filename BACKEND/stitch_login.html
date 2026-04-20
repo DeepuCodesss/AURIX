@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@200;300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#000000",
+                    "surface-dim": "#0e0e0f",
+                    "on-secondary-container": "#e9cdff",
+                    "surface-container-highest": "#262627",
+                    "tertiary-dim": "#00e2ee",
+                    "outline-variant": "#484849",
+                    "surface-container-low": "#131314",
+                    "secondary-container": "#6f00be",
+                    "on-surface": "#ffffff",
+                    "inverse-surface": "#fcf8f9",
+                    "on-tertiary-container": "#00555a",
+                    "tertiary-fixed": "#00f1fe",
+                    "primary-fixed": "#6ba0ff",
+                    "surface": "#0e0e0f",
+                    "secondary-dim": "#9c48ea",
+                    "primary-fixed-dim": "#5692f8",
+                    "on-tertiary": "#005f64",
+                    "surface-tint": "#83aeff",
+                    "surface-variant": "#262627",
+                    "inverse-on-surface": "#565556",
+                    "on-background": "#ffffff",
+                    "on-secondary-fixed": "#4f0089",
+                    "on-error-container": "#ffa8a3",
+                    "on-secondary": "#33005b",
+                    "primary-dim": "#669dff",
+                    "tertiary-container": "#00f1fe",
+                    "background": "#0e0e0f",
+                    "on-error": "#490006",
+                    "on-secondary-fixed-variant": "#7511c3",
+                    "on-primary-fixed-variant": "#002a60",
+                    "surface-container": "#1a191b",
+                    "on-tertiary-fixed": "#004145",
+                    "surface-container-high": "#201f21",
+                    "on-tertiary-fixed-variant": "#006065",
+                    "secondary": "#c180ff",
+                    "on-primary-container": "#00214e",
+                    "tertiary-fixed-dim": "#00e2ee",
+                    "on-surface-variant": "#adaaab",
+                    "error": "#ff716c",
+                    "secondary-fixed-dim": "#dbb4ff",
+                    "tertiary": "#99f7ff",
+                    "on-primary-fixed": "#000000",
+                    "error-dim": "#d7383b",
+                    "primary": "#83aeff",
+                    "primary-container": "#6ba0ff",
+                    "secondary-fixed": "#e5c6ff",
+                    "surface-bright": "#2c2c2d",
+                    "inverse-primary": "#025cbf",
+                    "outline": "#767576",
+                    "error-container": "#9f0519",
+                    "on-primary": "#002d64"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Manrope"],
+                    "label": ["Space Grotesk"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .quantum-gradient {
+            background: linear-gradient(135deg, #83aeff 0%, #c180ff 100%);
+        }
+        .glass-panel {
+            background: rgba(44, 44, 45, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(72, 72, 73, 0.15);
+        }
+        .grid-bg {
+            background-image: radial-gradient(circle at 2px 2px, rgba(72, 72, 73, 0.1) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col items-center justify-center overflow-hidden">
+<!-- Ambient Glow Effects -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none grid-bg z-0"></div>
+<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] z-0"></div>
+<div class="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[100px] z-0"></div>
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-center items-center py-6 px-8 bg-gradient-to-b from-[#0e0e0f] to-transparent">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#4D8AF0] text-3xl" data-icon="shield">shield</span>
+<h1 class="font-headline font-black tracking-widest text-[#4D8AF0] uppercase text-2xl">PHANTOMSHIELDX</h1>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="relative z-10 w-full max-w-[1200px] px-6 py-24 flex flex-col md:flex-row items-center justify-between gap-12 lg:gap-24">
+<!-- Left Side: Editorial Authority -->
+<div class="hidden md:flex flex-col max-w-lg space-y-8">
+<div class="space-y-4">
+<span class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-highest rounded-full border border-outline-variant/15">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary shadow-[0_0_8px_rgba(153,247,255,0.8)]"></span>
+<span class="text-tertiary font-label text-[10px] uppercase tracking-tighter">System Core v4.2.0 Active</span>
+</span>
+<h2 class="font-headline text-6xl lg:text-7xl font-bold tracking-tighter leading-none text-on-surface">
+                    THE <br/> <span class="text-transparent bg-clip-text quantum-gradient">OBSIDIAN</span> <br/> SENTINEL.
+                </h2>
+<p class="text-on-surface-variant text-lg leading-relaxed max-w-sm">
+                    Access the sovereign perimeter of your digital ecosystem. Authenticate to proceed into the command center.
+                </p>
+</div>
+<div class="flex gap-12 pt-8">
+<div class="flex flex-col">
+<span class="font-headline font-bold text-3xl text-on-surface">99.9%</span>
+<span class="font-label text-[10px] uppercase tracking-widest text-slate-500">Threat Mitigation</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-3xl text-on-surface">0ms</span>
+<span class="font-label text-[10px] uppercase tracking-widest text-slate-500">Latency Overhead</span>
+</div>
+</div>
+</div>
+<!-- Right Side: Secure Login Form -->
+<div class="w-full max-w-md">
+<div class="glass-panel p-8 md:p-10 rounded-xl relative overflow-hidden">
+<!-- Decorative Corner Element -->
+<div class="absolute top-0 right-0 w-16 h-16 pointer-events-none opacity-20">
+<div class="absolute top-4 right-4 border-t-2 border-r-2 border-primary w-4 h-4"></div>
+</div>
+<div class="space-y-2 mb-8">
+<h3 class="font-headline text-2xl font-bold text-on-surface">Secure Login</h3>
+<p class="text-on-surface-variant text-sm">Enter your credentials to bypass the sentinel.</p>
+</div>
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant ml-1" for="email">Email</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-sm group-focus-within:text-primary transition-colors" data-icon="alternate_email">alternate_email</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-sm py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/40 focus:ring-0 border-b-2 border-transparent focus:border-primary transition-all text-sm" id="email" placeholder="commander@phantomshield.x" type="email"/>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<label class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant ml-1" for="password">Password</label>
+<a class="text-[10px] font-label uppercase tracking-widest text-primary hover:text-secondary transition-colors duration-300" href="#">Forgot Password?</a>
+</div>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-sm group-focus-within:text-primary transition-colors" data-icon="lock">lock</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-sm py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/40 focus:ring-0 border-b-2 border-transparent focus:border-primary transition-all text-sm" id="password" placeholder="••••••••••••" type="password"/>
+</div>
+</div>
+<button class="w-full quantum-gradient text-on-primary font-label font-bold py-4 rounded-lg uppercase tracking-widest text-sm shadow-[0_10px_20px_rgba(131,174,255,0.2)] hover:shadow-[0_10px_25px_rgba(193,128,255,0.3)] transition-all duration-300 transform active:scale-[0.98]" type="submit">
+                        Sign In
+                    </button>
+</form>
+<div class="mt-8 pt-8 border-t border-outline-variant/15 flex flex-col items-center gap-4">
+<p class="text-on-surface-variant text-xs">Don't have an account? <a class="text-secondary font-bold hover:underline" href="#">Sign Up</a></p>
+<!-- SSO Options -->
+<div class="flex gap-4 w-full">
+<button class="flex-1 flex items-center justify-center py-2 px-4 rounded border border-outline-variant/30 hover:bg-surface-container-high transition-colors text-on-surface text-xs font-label uppercase tracking-tighter">
+<span class="material-symbols-outlined mr-2 scale-75" data-icon="key">key</span> SSO
+                        </button>
+<button class="flex-1 flex items-center justify-center py-2 px-4 rounded border border-outline-variant/30 hover:bg-surface-container-high transition-colors text-on-surface text-xs font-label uppercase tracking-tighter">
+<span class="material-symbols-outlined mr-2 scale-75" data-icon="fingerprint">fingerprint</span> Biometric
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Visual Element: Large Background Icon -->
+<div class="fixed -bottom-40 -left-40 opacity-5 pointer-events-none select-none z-0">
+<span class="material-symbols-outlined text-[600px]" data-icon="security">security</span>
+</div>
+<!-- Footer Content -->
+<footer class="fixed bottom-0 w-full z-50 flex flex-col md:flex-row justify-between items-center px-12 py-8 bg-transparent">
+<div class="font-body text-[10px] uppercase tracking-widest text-slate-500 mb-4 md:mb-0">
+            © 2024 PHANTOMSHIELDX. THE OBSIDIAN SENTINEL.
+        </div>
+<div class="flex gap-8">
+<a class="font-body text-[10px] uppercase tracking-widest text-slate-600 hover:text-[#83aeff] transition-colors" href="#">Privacy Protocol</a>
+<a class="font-body text-[10px] uppercase tracking-widest text-slate-600 hover:text-[#83aeff] transition-colors" href="#">Terms of Engagement</a>
+<a class="font-body text-[10px] uppercase tracking-widest text-slate-600 hover:text-[#83aeff] transition-colors" href="#">System Status</a>
+</div>
+</footer>
+</body></html>

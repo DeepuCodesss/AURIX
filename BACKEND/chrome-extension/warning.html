@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Warning: Dangerous Site Blocked</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #09090b;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .container {
+      background: rgba(20, 0, 0, 0.6);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 40px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 600px;
+      box-shadow: 0 0 40px rgba(239, 68, 68, 0.2);
+    }
+    .icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      color: #ef4444;
+    }
+    h1 {
+      margin: 0 0 10px 0;
+      color: #ef4444;
+      font-size: 32px;
+    }
+    p {
+      color: #a1a1aa;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .url-box {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px;
+      border-radius: 6px;
+      font-family: monospace;
+      color: #7dd3fc;
+      word-break: break-all;
+      margin-bottom: 20px;
+    }
+    .details {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      padding: 15px;
+      border-radius: 6px;
+      text-align: left;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .details strong {
+      color: #fff;
+    }
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background-color: #ef4444;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #dc2626;
+    }
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid #3f3f46;
+      color: #a1a1aa;
+    }
+    .btn-secondary:hover {
+      background-color: #27272a;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">⚠️</div>
+    <h1>Deceptive site ahead</h1>
+    <p>PhantomShield-X has blocked this website because it exhibits malicious behaviour. Attackers might try to trick you into installing software or revealing personal information (for example, passwords, phone numbers, or credit cards).</p>
+    
+    <div class="url-box" id="urlBox"></div>
+    
+    <div class="details">
+      <div><strong>Risk Score:</strong> <span id="scoreBox" style="color:#ef4444; font-weight:bold;"></span>/100</div>
+      <div style="margin-top: 10px;"><strong>Threat Intelligence:</strong> <span id="flagsBox"></span></div>
+    </div>
+    
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btnBack">Go Back (Safety)</button>
+      <button class="btn btn-secondary" id="btnProceed">Proceed Anyway (Unsafe)</button>
+    </div>
+  </div>
+
+  <script src="warning.js"></script>
+</body>
+</html>

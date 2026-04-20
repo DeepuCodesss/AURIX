@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phantom Shield X — AI Cyber Defense</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Share+Tech+Mono&display=swap');
+  :root {
+    --neon-red:#ff2244;--neon-blue:#00c8ff;--neon-purple:#b044ff;--neon-cyan:#00ffe7;
+    --dark-bg:#020406;--panel-bg:rgba(0,12,25,0.9);--grid-color:rgba(0,200,255,0.05);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--dark-bg);color:#c0d8f0;font-family:'Rajdhani',sans-serif;overflow-x:hidden;cursor:none}
+
+  /* CUSTOM CURSOR */
+  #cursor-dot{position:fixed;width:8px;height:8px;background:var(--neon-cyan);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--neon-cyan),0 0 20px var(--neon-cyan);transition:width .12s,height .12s}
+  #cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(0,200,255,0.45);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%)}
+
+  /* LOADER */
+  #loader{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;transition:opacity 1s ease,visibility 1s}
+  #loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+  .loader-logo{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,4vw,2.4rem);font-weight:900;letter-spacing:.25em;color:var(--neon-blue);text-shadow:0 0 40px rgba(0,200,255,.8),0 0 80px rgba(0,200,255,.4);opacity:0;animation:fadeInGlow .8s .3s ease forwards}
+  .loader-sub{font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:.35em;color:rgba(0,200,255,.55);opacity:0;animation:fadeInGlow .8s .8s ease forwards}
+  .loader-bar-wrap{width:280px;height:2px;background:rgba(0,200,255,.1);border-radius:2px;overflow:hidden}
+  .loader-bar{height:100%;background:linear-gradient(90deg,var(--neon-purple),var(--neon-blue),var(--neon-cyan));width:0;animation:loadBar 3.2s .5s cubic-bezier(.4,0,.2,1) forwards;box-shadow:0 0 16px var(--neon-blue)}
+  .loader-status{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:rgba(0,200,255,.45);letter-spacing:.15em;min-height:1em;min-width:280px}
+  @keyframes loadBar{to{width:100%}}
+  @keyframes fadeInGlow{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* CANVAS */
+  #canvas3d{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+  /* GRID BG */
+  #grid-bg{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background-image:linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px);
+    background-size:60px 60px;mask-image:radial-gradient(ellipse at 50% 50%,black 30%,transparent 75%);animation:gridPulse 8s ease-in-out infinite}
+  @keyframes gridPulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+  /* VIGNETTE */
+  #vignette{position:fixed;inset:0;z-index:998;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,.75) 100%)}
+
+  /* PARTICLES */
+  #particles{position:fixed;inset:0;z-index:2;pointer-events:none}
+
+  /* SCROLL CONTAINER */
+  #scroll-container{position:relative;z-index:10}
+
+  /* SECTIONS */
+  .section{min-height:100vh;display:flex;align-items:center;padding:clamp(80px,10vw,120px) clamp(24px,6vw,80px);position:relative}
+  .section-inner{max-width:520px}
+  .section-inner.right{margin-left:auto;text-align:right}
+  .section-inner.center{margin:0 auto;text-align:center;max-width:700px}
+  #s1{justify-content:flex-start}#s2{justify-content:flex-end}#s3{justify-content:flex-start}#s4{justify-content:flex-end}
+  #s5{justify-content:center;min-height:120vh}
+
+  /* TYPOGRAPHY */
+  .section-label{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:.5em;color:var(--neon-blue);text-transform:uppercase;margin-bottom:16px;opacity:0;transform:translateY(20px);transition:opacity .7s,transform .7s}
+  .section-label.visible{opacity:.75;transform:none}
+  .section-title{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,4vw,3rem);font-weight:900;line-height:1.08;margin-bottom:20px;color:#eaf4ff;opacity:0;transform:translateY(30px);transition:opacity .7s .12s,transform .7s .12s}
+  .section-title.visible{opacity:1;transform:none}
+  .section-title .accent-r{color:var(--neon-red);text-shadow:0 0 30px rgba(255,34,68,.7)}
+  .section-title .accent-b{color:var(--neon-blue);text-shadow:0 0 30px rgba(0,200,255,.7)}
+  .section-title .accent-p{color:var(--neon-purple);text-shadow:0 0 30px rgba(176,68,255,.7)}
+  .section-body{font-size:clamp(.95rem,1.5vw,1.1rem);line-height:1.8;color:rgba(192,216,240,.7);max-width:420px;opacity:0;transform:translateY(20px);transition:opacity .7s .22s,transform .7s .22s}
+  .section-body.visible{opacity:1;transform:none}
+
+  /* HUD PANELS */
+  .hud-panel{margin-top:32px;background:var(--panel-bg);border:1px solid rgba(0,200,255,.18);border-radius:3px;padding:16px 20px;position:relative;opacity:0;transform:translateY(16px);transition:opacity .7s .35s,transform .7s .35s;backdrop-filter:blur(8px)}
+  .hud-panel.visible{opacity:1;transform:none}
+  .hud-panel::before{content:'';position:absolute;top:-1px;left:20px;width:60px;height:2px;background:var(--neon-blue);box-shadow:0 0 12px var(--neon-blue)}
+  .hud-panel::after{content:'';position:absolute;bottom:-1px;right:20px;width:40px;height:2px;background:var(--neon-purple);box-shadow:0 0 12px var(--neon-purple)}
+  .hud-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(0,200,255,.07);font-size:.82rem}
+  .hud-row:last-child{border-bottom:none}
+  .hud-key{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.1em;color:rgba(0,200,255,.45);min-width:110px}
+  .hud-val{color:#e8f4ff;flex:1}
+  .hud-dot{width:6px;height:6px;border-radius:50%;background:var(--neon-cyan);box-shadow:0 0 8px var(--neon-cyan);animation:pulse-dot 1.8s ease-in-out infinite;flex-shrink:0}
+  .hud-dot.red{background:var(--neon-red);box-shadow:0 0 8px var(--neon-red)}
+  @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.25}}
+
+  /* SCAN LINE */
+  .scan-wrap{margin-top:24px;position:relative;height:3px;background:rgba(0,200,255,.08);border-radius:2px;overflow:hidden;opacity:0;transition:opacity .5s .5s}
+  .scan-wrap.visible{opacity:1}
+  .scan-line{position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,var(--neon-blue),var(--neon-cyan),transparent);animation:scan 2s linear infinite;box-shadow:0 0 8px var(--neon-cyan)}
+  @keyframes scan{to{left:140%}}
+
+  /* STAT CARDS */
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px;opacity:0;transform:translateY(16px);transition:opacity .7s .3s,transform .7s .3s}
+  .stat-grid.visible{opacity:1;transform:none}
+  .stat-card{background:rgba(0,8,18,.78);border:1px solid rgba(0,200,255,.13);border-radius:3px;padding:18px 16px;text-align:center;position:relative;overflow:hidden;transition:border-color .3s,transform .3s,box-shadow .3s;cursor:default;backdrop-filter:blur(6px)}
+  .stat-card:hover{border-color:rgba(0,200,255,.45);transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,200,255,.1)}
+  .stat-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,200,255,.05),transparent 70%);pointer-events:none}
+  .stat-num{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,2.5vw,1.9rem);font-weight:900;line-height:1;margin-bottom:7px}
+  .stat-label{font-size:.68rem;letter-spacing:.18em;color:rgba(0,200,255,.5);text-transform:uppercase;font-family:'Share Tech Mono',monospace}
+
+  /* HERO BRAND */
+  .brand-hero{font-family:'Share Tech Mono',monospace;font-size:clamp(.6rem,1vw,.75rem);letter-spacing:.5em;color:rgba(0,200,255,.45);text-transform:uppercase;margin-bottom:14px}
+  .brand-main{font-family:'Orbitron',monospace;font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;line-height:1;letter-spacing:-.02em;color:#fff;text-shadow:0 0 60px rgba(0,200,255,.35),0 0 120px rgba(0,200,255,.15);margin-bottom:8px}
+  .brand-x{color:var(--neon-red);text-shadow:0 0 40px rgba(255,34,68,.9),0 0 80px rgba(255,34,68,.5)}
+  .brand-tagline{font-size:clamp(.9rem,1.5vw,1.1rem);color:rgba(192,216,240,.65);max-width:560px;margin:18px auto 42px;line-height:1.75}
+
+  /* CTA BUTTON */
+  .cta-btn{display:inline-flex;align-items:center;gap:12px;font-family:'Orbitron',monospace;font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--neon-blue);border:1px solid rgba(0,200,255,.35);background:rgba(0,200,255,.04);padding:15px 34px;cursor:none;position:relative;overflow:hidden;text-decoration:none;transition:color .3s,border-color .3s,box-shadow .3s}
+  .cta-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple));opacity:0;transition:opacity .3s}
+  .cta-btn::after{content:'';position:absolute;top:-50%;left:-60%;width:40%;height:200%;background:rgba(255,255,255,.08);transform:skewX(-20deg);transition:left .5s ease}
+  .cta-btn:hover{color:#fff;border-color:transparent;box-shadow:0 0 30px rgba(0,200,255,.25)}
+  .cta-btn:hover::before{opacity:1}
+  .cta-btn:hover::after{left:130%}
+  .cta-btn span{position:relative;z-index:1}
+
+  /* FINAL SECTION */
+  .final-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(176,68,255,.12) 0%,rgba(255,34,68,.06) 40%,transparent 70%);pointer-events:none;animation:breathe 4s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.7}50%{transform:translate(-50%,-50%) scale(1.18);opacity:1}}
+
+  /* SCROLL HINT */
+  .scroll-hint{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:1;transition:opacity .5s;pointer-events:none}
+  .scroll-hint.hidden{opacity:0}
+  .scroll-hint-text{font-family:'Share Tech Mono',monospace;font-size:.5rem;letter-spacing:.4em;color:rgba(0,200,255,.35)}
+  .scroll-hint-arrow{width:1px;height:40px;background:linear-gradient(to bottom,rgba(0,200,255,.4),transparent);animation:scrollBounce 1.6s ease-in-out infinite}
+  @keyframes scrollBounce{0%,100%{transform:scaleY(1);opacity:.4}50%{transform:scaleY(1.35);opacity:1}}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:22px clamp(24px,4vw,60px);background:linear-gradient(to bottom,rgba(2,4,6,.92),transparent);backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,200,255,.04)}
+  .nav-logo{font-family:'Orbitron',monospace;font-size:.88rem;font-weight:900;letter-spacing:.22em;color:#fff;text-shadow:0 0 20px rgba(0,200,255,.3)}
+  .nav-logo .x{color:var(--neon-red)}
+  .nav-links{display:flex;gap:32px;list-style:none}
+  .nav-links a{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(192,216,240,.45);text-decoration:none;transition:color .25s,text-shadow .25s}
+  .nav-links a:hover{color:var(--neon-blue);text-shadow:0 0 12px rgba(0,200,255,.5)}
+  .nav-status{display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:.56rem;letter-spacing:.2em;color:rgba(0,255,200,.6)}
+  .nav-dot{width:7px;height:7px;border-radius:50%;background:var(--neon-cyan);box-shadow:0 0 10px var(--neon-cyan);animation:pulse-dot 2s infinite}
+
+  /* BRACKETS */
+  .bracket{position:absolute;width:22px;height:22px;opacity:.28;transition:opacity .5s}
+  .section:hover .bracket{opacity:.55}
+  .bracket.tl{top:18px;left:18px;border-top:1px solid var(--neon-blue);border-left:1px solid var(--neon-blue)}
+  .bracket.tr{top:18px;right:18px;border-top:1px solid var(--neon-blue);border-right:1px solid var(--neon-blue)}
+  .bracket.bl{bottom:18px;left:18px;border-bottom:1px solid var(--neon-blue);border-left:1px solid var(--neon-blue)}
+  .bracket.br{bottom:18px;right:18px;border-bottom:1px solid var(--neon-blue);border-right:1px solid var(--neon-blue)}
+
+  /* PROGRESS BAR */
+  #progress-bar{position:fixed;top:0;left:0;height:2px;z-index:9998;background:linear-gradient(90deg,var(--neon-purple),var(--neon-blue),var(--neon-cyan));box-shadow:0 0 12px var(--neon-blue);transition:width .12s linear;width:0%}
+
+  /* SCANLINES */
+  #scanlines{position:fixed;inset:0;z-index:999;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.022) 3px,rgba(0,0,0,.022) 4px);opacity:.5}
+
+  /* GLITCH */
+  .glitch{position:relative}
+  .glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;opacity:0}
+  .glitch:hover::before{color:var(--neon-red);clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%);transform:translateX(-4px);animation:glitch1 .35s steps(2) forwards}
+  .glitch:hover::after{color:var(--neon-blue);clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%);transform:translateX(4px);animation:glitch2 .35s steps(2) forwards}
+  @keyframes glitch1{0%{opacity:.8}100%{opacity:0}}
+  @keyframes glitch2{0%{opacity:.8}100%{opacity:0}}
+
+  /* AUDIO BUTTON */
+  #audio-btn{position:fixed;bottom:28px;right:28px;z-index:600;width:44px;height:44px;border:1px solid rgba(0,200,255,.3);background:rgba(0,12,25,.88);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:none;backdrop-filter:blur(8px);transition:border-color .3s,box-shadow .3s}
+  #audio-btn:hover{border-color:var(--neon-blue);box-shadow:0 0 18px rgba(0,200,255,.3)}
+  #audio-btn svg{width:18px;height:18px}
+
+  /* SECTION DIVIDER */
+  .section-line{position:absolute;bottom:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,200,255,.13),transparent)}
+
+  /* RESPONSIVE */
+  @media(max-width:768px){
+    .nav-links,.nav-status{display:none}
+    .section-inner.right{margin-left:0;text-align:left}
+    #s2,#s4{justify-content:flex-start}
+    body{cursor:auto}
+    #cursor-dot,#cursor-ring{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- PROGRESS BAR -->
+<div id="progress-bar"></div>
+
+<!-- SCANLINES -->
+<div id="scanlines"></div>
+
+<!-- VIGNETTE -->
+<div id="vignette"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">PHANTOM SHIELD X</div>
+  <div class="loader-sub">Initializing Defense Matrix</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <div class="loader-status" id="loader-status">LOADING CORE SYSTEMS...</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">PSX<span class="x"> ✦</span></div>
+  <ul class="nav-links">
+    <li><a href="#s1">System</a></li>
+    <li><a href="#s2">Threat</a></li>
+    <li><a href="#s3">Defense</a></li>
+    <li><a href="#s5">Activate</a></li>
+  </ul>
+  <div class="nav-status"><div class="nav-dot"></div><span>ONLINE</span></div>
+</nav>
+
+<!-- 3D CANVAS -->
+<canvas id="canvas3d"></canvas>
+<div id="grid-bg"></div>
+<canvas id="particles"></canvas>
+
+<!-- SCROLL CONTAINER -->
+<div id="scroll-container">
+
+  <section class="section" id="s1">
+    <div class="bracket tl"></div><div class="bracket tr"></div>
+    <div class="bracket bl"></div><div class="bracket br"></div>
+    <div class="section-inner">
+      <div class="brand-hero">NEXT-GEN AI CYBER DEFENSE</div>
+      <h1 class="brand-main glitch" data-text="PHANTOM">PHANTOM</h1>
+      <h1 class="brand-main" style="margin-top:-12px">SHIELD<span class="brand-x"> X</span></h1>
+      <p class="brand-tagline">AI that predicts and stops cyber attacks before they happen. Born from the frontier of machine intelligence, forged for the digital battlefield.</p>
+      <a class="cta-btn" href="#s2"><span>INITIALIZE SYSTEM</span> <span>→</span></a>
+      <div class="hud-panel visible" style="opacity:1;transform:none;margin-top:40px">
+        <div class="hud-row"><span class="hud-key">THREAT MODEL</span><span class="hud-val">Predictive Neural v4.1</span><div class="hud-dot"></div></div>
+        <div class="hud-row"><span class="hud-key">STATUS</span><span class="hud-val">Awakening...</span><div class="hud-dot red"></div></div>
+        <div class="hud-row"><span class="hud-key">UPTIME</span><span class="hud-val" id="uptime-val">00:00:00</span><div class="hud-dot"></div></div>
+      </div>
+    </div>
+    <div class="section-line"></div>
+  </section>
+
+  <section class="section" id="s2">
+    <div class="section-inner right">
+      <div class="section-label" data-anim>THREAT DETECTION</div>
+      <h2 class="section-title" data-anim>EYES<br>OF THE<br><span class="accent-r">MACHINE</span></h2>
+      <p class="section-body" data-anim>Real-time threat scanning across 14 billion network nodes. Phantom Shield X sees what humans cannot — pattern anomalies in the noise, attack vectors before they form.</p>
+      <div class="hud-panel" data-anim>
+        <div class="hud-row"><span class="hud-key">SCAN RATE</span><span class="hud-val">14.2 B nodes/sec</span><div class="hud-dot"></div></div>
+        <div class="hud-row"><span class="hud-key">ANOMALIES</span><span class="hud-val" id="threat-count">0 detected</span><div class="hud-dot red"></div></div>
+        <div class="hud-row"><span class="hud-key">ACCURACY</span><span class="hud-val">99.97%</span><div class="hud-dot"></div></div>
+      </div>
+      <div class="scan-wrap" data-anim><div class="scan-line"></div></div>
+    </div>
+    <div class="section-line"></div>
+  </section>
+
+  <section class="section" id="s3">
+    <div class="section-inner">
+      <div class="section-label" data-anim>DEFENSE ARCHITECTURE</div>
+      <h2 class="section-title" data-anim>360°<br><span class="accent-b">PERIMETER</span><br>GUARD</h2>
+      <p class="section-body" data-anim>Omnidirectional threat assessment. No blind spots. Phantom Shield X circles your infrastructure continuously, modeling attack surfaces faster than any human analyst.</p>
+      <div class="stat-grid" data-anim>
+        <div class="stat-card"><div class="stat-num" style="color:var(--neon-blue)">0.3ms</div><div class="stat-label">Response Time</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--neon-purple)">∞</div><div class="stat-label">Scale</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--neon-red)">24/7</div><div class="stat-label">Active Guard</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--neon-cyan)">4.2B</div><div class="stat-label">Threats Stopped</div></div>
+      </div>
+    </div>
+    <div class="section-line"></div>
+  </section>
+
+  <section class="section" id="s4">
+    <div class="section-inner right">
+      <div class="section-label" data-anim>ADAPTIVE RESPONSE</div>
+      <h2 class="section-title" data-anim>SHAPE-<br>SHIFTING<br><span class="accent-p">TACTICS</span></h2>
+      <p class="section-body" data-anim>Dynamic countermeasure deployment. Phantom Shield X morphs its defensive posture in real time — isolating threats, deploying honeypots, rewriting firewall rules autonomously.</p>
+      <div class="hud-panel" data-anim>
+        <div class="hud-row"><span class="hud-key">MODE</span><span class="hud-val">Adaptive Counterstrike</span><div class="hud-dot"></div></div>
+        <div class="hud-row"><span class="hud-key">MODULES ACTIVE</span><span class="hud-val">Firewall / IDS / Deception</span><div class="hud-dot"></div></div>
+        <div class="hud-row"><span class="hud-key">LEARNING RATE</span><span class="hud-val">Continuous (LLM-4X core)</span><div class="hud-dot red"></div></div>
+      </div>
+    </div>
+    <div class="section-line"></div>
+  </section>
+
+  <section class="section" id="s5" style="flex-direction:column">
+    <div class="final-glow"></div>
+    <div class="section-inner center">
+      <div class="section-label" data-anim style="text-align:center">FULL ACTIVATION SEQUENCE</div>
+      <h2 class="section-title" data-anim style="text-align:center;font-size:clamp(2rem,5vw,4rem)">
+        <span class="accent-r">PHANTOM</span><br>
+        <span class="accent-b">SHIELD</span><span class="accent-p"> X</span>
+      </h2>
+      <p class="section-body" data-anim style="margin:0 auto;text-align:center;max-width:500px">The future of cyber defense is not reactive — it is prophetic. AI that reads the battlefield before the battle begins.</p>
+      <div class="stat-grid" data-anim style="max-width:480px;margin:28px auto 0;grid-template-columns:repeat(2,1fr)">
+        <div class="stat-card"><div class="stat-num" style="color:var(--neon-red)">100%</div><div class="stat-label">AI-Native</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--neon-blue)">Zero</div><div class="stat-label">Day Attacks Stopped</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--neon-purple)">Pred.</div><div class="stat-label">Intelligence</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:var(--neon-cyan)">∞</div><div class="stat-label">Protection Layers</div></div>
+      </div>
+      <div style="margin-top:44px;opacity:0;transform:translateY(20px);transition:opacity .7s .5s,transform .7s .5s" data-anim>
+        <a class="cta-btn" href="#s1" style="font-size:.78rem;padding:18px 44px"><span>DEPLOY PHANTOM SHIELD X</span></a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="scroll-hint" id="scroll-hint">
+  <div class="scroll-hint-text">SCROLL</div>
+  <div class="scroll-hint-arrow"></div>
+</div>
+
+<!-- AUDIO TOGGLE -->
+<button id="audio-btn" title="Toggle Sound">
+  <svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,200,255,0.7)" stroke-width="1.5">
+    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+    <path id="aw1" d="M15.54 8.46a5 5 0 010 7.07"/>
+    <path id="aw2" d="M19.07 4.93a10 10 0 010 14.14"/>
+  </svg>
+</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  PHANTOM SHIELD X — CINEMATIC UPGRADE v2.0
+//  ▸ Custom cursor with lag ring
+//  ▸ Web Audio API — layered drone + activation sounds
+//  ▸ Custom post-processing bloom (render targets + shaders)
+//  ▸ Cinematic 3-point HDR-style lighting
+//  ▸ Enhanced particle system (depth + data streams)
+//  ▸ Improved camera easing & scroll transitions
+// ═══════════════════════════════════════════════════════════════
+
+// ── CUSTOM CURSOR ──────────────────────────────────────────────
+const cursorDot  = document.getElementById('cursor-dot');
+const cursorRing = document.getElementById('cursor-ring');
+let cx = -100, cy = -100, rx = -100, ry = -100;
+
+document.addEventListener('mousemove', e => {
+  cx = e.clientX; cy = e.clientY;
+  cursorDot.style.left = cx + 'px';
+  cursorDot.style.top  = cy + 'px';
+});
+(function lagRing() {
+  rx += (cx - rx) * 0.11;
+  ry += (cy - ry) * 0.11;
+  cursorRing.style.left = rx + 'px';
+  cursorRing.style.top  = ry + 'px';
+  requestAnimationFrame(lagRing);
+})();
+
+// Cursor expand on interactive elements
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursorDot.style.width = '12px'; cursorDot.style.height = '12px';
+    cursorRing.style.width = '52px'; cursorRing.style.height = '52px';
+    cursorRing.style.borderColor = 'rgba(176,68,255,0.7)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursorDot.style.width = '8px'; cursorDot.style.height = '8px';
+    cursorRing.style.width = '36px'; cursorRing.style.height = '36px';
+    cursorRing.style.borderColor = 'rgba(0,200,255,0.45)';
+  });
+});
+
+// ── LOADER ────────────────────────────────────────────────────
+const loaderMsgs = [
+  'LOADING CORE SYSTEMS...','INITIALIZING AI MATRIX...',
+  'CALIBRATING THREAT SENSORS...','ACTIVATING DEFENSE GRID...',
+  'RENDERING 3D ENVIRONMENT...','PHANTOM SHIELD X ONLINE.'
+];
+let mIdx = 0;
+const statusEl = document.getElementById('loader-status');
+const mInt = setInterval(() => {
+  if (++mIdx < loaderMsgs.length) statusEl.textContent = loaderMsgs[mIdx];
+  else clearInterval(mInt);
+}, 560);
+
+function startApp() {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+    initAll();
+  }, 3600);
+}
+if (document.readyState === 'complete') startApp();
+else window.addEventListener('load', startApp);
+
+// ── UPTIME & THREAT COUNTER ────────────────────────────────────
+const uptimeStart = Date.now();
+setInterval(() => {
+  const el = document.getElementById('uptime-val');
+  if (!el) return;
+  const s = Math.floor((Date.now()-uptimeStart)/1000);
+  el.textContent = [Math.floor(s/3600),Math.floor((s%3600)/60),s%60].map(n=>String(n).padStart(2,'0')).join(':');
+}, 1000);
+let threatCnt = 0;
+setInterval(() => {
+  if (Math.random() < .35) threatCnt++;
+  const el = document.getElementById('threat-count');
+  if (el) el.textContent = threatCnt + ' detected';
+}, 750);
+
+// ═══════════════════════════════════════════════════════════════
+//  WEB AUDIO — CINEMATIC SOUND ENGINE
+// ═══════════════════════════════════════════════════════════════
+let audioCtx = null, masterGain = null, audioOn = false;
+let eyeSoundPlayed = false, activationSoundPlayed = false;
+
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  masterGain = audioCtx.createGain();
+  masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+  masterGain.connect(audioCtx.destination);
+
+  // Convolution reverb for space
+  const conv = audioCtx.createConvolver();
+  const convGain = audioCtx.createGain();
+  convGain.gain.value = 0.25;
+  const irLen = audioCtx.sampleRate * 2.5;
+  const ir = audioCtx.createBuffer(2, irLen, audioCtx.sampleRate);
+  for (let c = 0; c < 2; c++) {
+    const ch = ir.getChannelData(c);
+    for (let i = 0; i < irLen; i++) ch[i] = (Math.random()*2-1) * Math.pow(1-i/irLen, 2.8);
+  }
+  conv.buffer = ir;
+  conv.connect(convGain);
+  convGain.connect(masterGain);
+
+  // Layered drone oscillators — detuned for organic texture
+  const droneConfig = [
+    {freq:40, type:'sawtooth', gain:0.07, lfoRate:0.04},
+    {freq:40.4, type:'sawtooth', gain:0.06, lfoRate:0.05},
+    {freq:80, type:'sine', gain:0.04, lfoRate:0.07},
+    {freq:120.3, type:'sine', gain:0.025, lfoRate:0.03},
+    {freq:160.8, type:'triangle', gain:0.02, lfoRate:0.06}
+  ];
+  droneConfig.forEach(cfg => {
+    const osc = audioCtx.createOscillator();
+    const g   = audioCtx.createGain();
+    const lpf = audioCtx.createBiquadFilter();
+    const lfo = audioCtx.createOscillator();
+    const lfoG = audioCtx.createGain();
+    osc.type = cfg.type; osc.frequency.value = cfg.freq;
+    lfo.frequency.value = cfg.lfoRate; lfoG.gain.value = 0.25;
+    lfo.connect(lfoG); lfoG.connect(osc.frequency);
+    lpf.type = 'lowpass'; lpf.frequency.value = 400; lpf.Q.value = 1.5;
+    g.gain.value = cfg.gain;
+    osc.connect(lpf); lpf.connect(g);
+    g.connect(masterGain); g.connect(conv);
+    osc.start(); lfo.start();
+  });
+
+  // Sub-bass pulse
+  const sub = audioCtx.createOscillator();
+  const subG = audioCtx.createGain();
+  sub.type = 'sine'; sub.frequency.value = 22;
+  subG.gain.value = 0.1;
+  sub.connect(subG); subG.connect(masterGain); sub.start();
+}
+
+function playEyeSound() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  [1200, 800, 600].forEach((f, i) => {
+    const osc = audioCtx.createOscillator();
+    const g   = audioCtx.createGain();
+    osc.type = 'sine'; osc.frequency.value = f;
+    g.gain.setValueAtTime(0.06, t + i*0.08);
+    g.gain.exponentialRampToValueAtTime(0.001, t + i*0.08 + 0.35);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(t + i*0.08); osc.stop(t + i*0.08 + 0.35);
+  });
+}
+
+function playActivationSound() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  // Rising sweep
+  const sw = audioCtx.createOscillator();
+  const swG = audioCtx.createGain();
+  sw.type = 'sawtooth';
+  sw.frequency.setValueAtTime(60, t);
+  sw.frequency.exponentialRampToValueAtTime(1200, t + 1.8);
+  swG.gain.setValueAtTime(0, t);
+  swG.gain.linearRampToValueAtTime(0.1, t + 0.08);
+  swG.gain.exponentialRampToValueAtTime(0.001, t + 1.8);
+  const swF = audioCtx.createBiquadFilter();
+  swF.type = 'bandpass'; swF.frequency.value = 600; swF.Q.value = 2;
+  sw.connect(swF); swF.connect(swG); swG.connect(audioCtx.destination);
+  sw.start(t); sw.stop(t + 1.85);
+  // Impact noise burst
+  const nBuf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.25, audioCtx.sampleRate);
+  const nd = nBuf.getChannelData(0);
+  for (let i = 0; i < nd.length; i++) nd[i] = Math.random()*2-1;
+  const nSrc = audioCtx.createBufferSource();
+  nSrc.buffer = nBuf;
+  const nF = audioCtx.createBiquadFilter(); nF.type = 'bandpass'; nF.frequency.value = 180;
+  const nG = audioCtx.createGain();
+  nG.gain.setValueAtTime(0.18, t); nG.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+  nSrc.connect(nF); nF.connect(nG); nG.connect(audioCtx.destination); nSrc.start(t);
+}
+
+function toggleAudio() {
+  if (!audioCtx) initAudio();
+  audioOn = !audioOn;
+  if (audioOn) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+    masterGain.gain.linearRampToValueAtTime(0.55, audioCtx.currentTime + 2.5);
+    document.getElementById('aw1').style.opacity = '1';
+    document.getElementById('aw2').style.opacity = '1';
+  } else {
+    masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+    masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+    document.getElementById('aw1').style.opacity = '.3';
+    document.getElementById('aw2').style.opacity = '.3';
+  }
+}
+document.getElementById('audio-btn').onclick = toggleAudio;
+document.addEventListener('click', () => { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }, {once:true});
+document.getElementById('aw1').style.opacity = '.3';
+document.getElementById('aw2').style.opacity = '.3';
+
+// ═══════════════════════════════════════════════════════════════
+//  ENHANCED PARTICLE SYSTEM
+// ═══════════════════════════════════════════════════════════════
+function initParticles() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], streams = [];
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() { this.reset(true); }
+    reset(init = false) {
+      this.x = Math.random() * W;
+      this.y = init ? Math.random() * H : H + 8;
+      this.vx = (Math.random()-.5) * .5;
+      this.vy = -(Math.random() * .55 + .1);
+      this.life = init ? Math.random() : 0;
+      this.maxLife = .45 + Math.random() * .55;
+      // Depth — affects size and speed
+      this.depth = Math.random();
+      this.r = this.depth < .2 ? Math.random()*2.5+1.5 : Math.random()*1.1+.2;
+      const clrs = ['0,200,255','176,68,255','0,255,231','255,34,68'];
+      this.color = clrs[Math.floor(Math.random()*4)];
+      this.twinkle = Math.random() * Math.PI * 2;
+      this.tSpeed = .02 + Math.random() * .04;
+    }
+    update() {
+      const spd = .3 + this.depth * .7;
+      this.x += this.vx * spd;
+      this.y += this.vy * spd;
+      this.life += .0022 + this.depth * .001;
+      this.twinkle += this.tSpeed;
+      if (this.life > this.maxLife || this.y < -8) this.reset();
+    }
+    draw() {
+      const lf = this.life / this.maxLife;
+      const tw = .7 + .3 * Math.sin(this.twinkle);
+      const alpha = Math.sin(lf * Math.PI) * .65 * tw * (.35 + this.depth * .65);
+      if (this.r > 1.2) {
+        const grd = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r * 3.5);
+        grd.addColorStop(0, `rgba(${this.color},${alpha})`);
+        grd.addColorStop(1, `rgba(${this.color},0)`);
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.r*3.5, 0, Math.PI*2);
+        ctx.fillStyle = grd; ctx.fill();
+      }
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${this.color},${alpha})`; ctx.fill();
+    }
+  }
+
+  class DataStream {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.vy = -(1 + Math.random() * 2.2);
+      this.len = 25 + Math.random() * 65;
+      this.alpha = .025 + Math.random() * .07;
+      this.w = .4 + Math.random() * .5;
+      this.color = Math.random() < .6 ? '0,200,255' : '0,255,231';
+    }
+    update() { this.y += this.vy; if (this.y + this.len < 0) this.reset(); }
+    draw() {
+      const g = ctx.createLinearGradient(this.x, this.y, this.x, this.y+this.len);
+      g.addColorStop(0, `rgba(${this.color},0)`);
+      g.addColorStop(.5, `rgba(${this.color},${this.alpha})`);
+      g.addColorStop(1, `rgba(${this.color},0)`);
+      ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x, this.y+this.len);
+      ctx.strokeStyle = g; ctx.lineWidth = this.w; ctx.stroke();
+    }
+  }
+
+  for (let i = 0; i < 220; i++) particles.push(new Particle());
+  for (let i = 0; i < 28; i++) streams.push(new DataStream());
+
+  (function loop() {
+    ctx.clearRect(0, 0, W, H);
+    streams.forEach(s => { s.update(); s.draw(); });
+    // Depth sort: far → near
+    [...particles].sort((a,b) => a.depth-b.depth).forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(loop);
+  })();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  THREE.JS — MECH ROBOT + POST-PROCESSING BLOOM
+// ═══════════════════════════════════════════════════════════════
+function initThree() {
+  const canvas = document.getElementById('canvas3d');
+
+  // ── RENDERER ─────────────────────────────────────────────────
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, powerPreference:'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.45;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+
+  const scene  = new THREE.Scene();
+  scene.fog    = new THREE.FogExp2(0x020406, 0.032);
+  const camera = new THREE.PerspectiveCamera(48, window.innerWidth/window.innerHeight, 0.1, 200);
+  camera.position.set(0, 2, 9);
+  camera.lookAt(0, 1.5, 0);
+
+  // ── RENDER TARGETS FOR BLOOM ──────────────────────────────────
+  const rtOpts = { minFilter:THREE.LinearFilter, magFilter:THREE.LinearFilter, format:THREE.RGBAFormat };
+  const rtMain = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, rtOpts);
+  const rtBlurH = new THREE.WebGLRenderTarget(window.innerWidth/2, window.innerHeight/2, rtOpts);
+  const rtBlurV = new THREE.WebGLRenderTarget(window.innerWidth/2, window.innerHeight/2, rtOpts);
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    rtMain.setSize(window.innerWidth, window.innerHeight);
+    rtBlurH.setSize(window.innerWidth/2, window.innerHeight/2);
+    rtBlurV.setSize(window.innerWidth/2, window.innerHeight/2);
+    blurHMat.uniforms.res.value.set(window.innerWidth/2, window.innerHeight/2);
+    blurVMat.uniforms.res.value.set(window.innerWidth/2, window.innerHeight/2);
+  });
+
+  const quadGeo = new THREE.PlaneGeometry(2, 2);
+  const orthoCamera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+
+  // Horizontal blur pass
+  const blurHMat = new THREE.ShaderMaterial({
+    uniforms:{ tDiffuse:{value:null}, res:{value:new THREE.Vector2(window.innerWidth/2, window.innerHeight/2)} },
+    vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position,1.); }`,
+    fragmentShader:`
+      uniform sampler2D tDiffuse; uniform vec2 res; varying vec2 vUv;
+      void main(){
+        vec2 t=1./res; vec4 c=vec4(0.);
+        float w[7]; w[0]=.0625;w[1]=.125;w[2]=.1875;w[3]=.25;w[4]=.1875;w[5]=.125;w[6]=.0625;
+        for(int i=-3;i<=3;i++) c+=texture2D(tDiffuse,vUv+vec2(float(i)*t.x*2.,0.))*w[i+3];
+        gl_FragColor=c;
+      }`
+  });
+  // Vertical blur pass
+  const blurVMat = new THREE.ShaderMaterial({
+    uniforms:{ tDiffuse:{value:null}, res:{value:new THREE.Vector2(window.innerWidth/2, window.innerHeight/2)} },
+    vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position,1.); }`,
+    fragmentShader:`
+      uniform sampler2D tDiffuse; uniform vec2 res; varying vec2 vUv;
+      void main(){
+        vec2 t=1./res; vec4 c=vec4(0.);
+        float w[7]; w[0]=.0625;w[1]=.125;w[2]=.1875;w[3]=.25;w[4]=.1875;w[5]=.125;w[6]=.0625;
+        for(int i=-3;i<=3;i++) c+=texture2D(tDiffuse,vUv+vec2(0.,float(i)*t.y*2.))*w[i+3];
+        gl_FragColor=c;
+      }`
+  });
+  // Composite pass — base + additive bloom + film grain + chromatic aberration
+  const compMat = new THREE.ShaderMaterial({
+    uniforms:{ tBase:{value:null}, tBloom:{value:null}, bloomStr:{value:.4}, time:{value:0.} },
+    vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position,1.); }`,
+    fragmentShader:`
+      uniform sampler2D tBase,tBloom; uniform float bloomStr,time; varying vec2 vUv;
+      float rnd(vec2 c){ return fract(sin(dot(c,vec2(12.9898,78.233)))*43758.5453); }
+      void main(){
+        vec4 base=texture2D(tBase,vUv);
+        float ca=.0025;
+        vec4 bloomC=texture2D(tBloom,vUv);
+        vec4 bloomR=texture2D(tBloom,vUv+vec2(ca,0.));
+        vec4 bloomB=texture2D(tBloom,vUv-vec2(ca,0.));
+        bloomC.r=bloomR.r; bloomC.b=bloomB.b;
+        vec4 col=base+bloomC*bloomStr;
+        // Film grain
+        col.rgb+=rnd(vUv+fract(time*.09))*.038-.019;
+        // Subtle vignette
+        vec2 uv=vUv*(1.-vUv.yx);
+        float v=pow(uv.x*uv.y*14.,0.22);
+        col.rgb*=0.84+v*.16;
+        gl_FragColor=clamp(col,0.,1.6);
+      }`
+  });
+
+  const blurHScene = new THREE.Scene();
+  const blurVScene = new THREE.Scene();
+  const compScene  = new THREE.Scene();
+  blurHScene.add(new THREE.Mesh(quadGeo, blurHMat));
+  blurVScene.add(new THREE.Mesh(quadGeo, blurVMat));
+  compScene.add(new THREE.Mesh(quadGeo, compMat));
+
+  // ── MATERIALS ─────────────────────────────────────────────────
+  const matArmor  = new THREE.MeshStandardMaterial({ color:0x080e1a, metalness:.95, roughness:.17, envMapIntensity:1.3 });
+  const matAccent = new THREE.MeshStandardMaterial({ color:0x003f88, metalness:.85, roughness:.14, emissive:new THREE.Color(0x001f44), emissiveIntensity:.45 });
+  const matGlow   = new THREE.MeshStandardMaterial({ color:0x00c8ff, metalness:.15, roughness:.04, emissive:new THREE.Color(0x00c8ff), emissiveIntensity:0 });
+  const matEye    = new THREE.MeshStandardMaterial({ color:0xff2244, metalness:.1, roughness:.02, emissive:new THREE.Color(0xff2244), emissiveIntensity:0 });
+  const matEdge   = new THREE.MeshStandardMaterial({ color:0x192233, metalness:1, roughness:.11, emissive:new THREE.Color(0x000810), emissiveIntensity:.28 });
+  const matJoint  = new THREE.MeshStandardMaterial({ color:0x283443, metalness:.88, roughness:.28 });
+  const matPurple = new THREE.MeshStandardMaterial({ color:0x380065, metalness:.75, roughness:.17, emissive:new THREE.Color(0x180030), emissiveIntensity:.55 });
+
+  function box(w,h,d,m){ const me=new THREE.Mesh(new THREE.BoxGeometry(w,h,d,2,2,2),m); me.castShadow=true; me.receiveShadow=true; return me; }
+  function cyl(rt,rb,h,s,m){ const me=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,s),m); me.castShadow=true; return me; }
+  function sph(r,m){ const me=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),m); me.castShadow=true; return me; }
+
+  // ── ROBOT CONSTRUCTION (all parts preserved + enhanced) ──────
+  const root = new THREE.Group();
+  scene.add(root);
+
+  const torso = new THREE.Group();
+  root.add(torso);
+
+  // Torso body
+  torso.add(box(1.6,2,.9,matArmor));
+  const chestPlate = box(1.2,1.2,.12,matAccent); chestPlate.position.set(0,.1,.51); torso.add(chestPlate);
+  const chestStrip = box(.3,.06,.13,matGlow); chestStrip.position.set(0,.1,.52); torso.add(chestStrip);
+  [-0.85,0.85].forEach(sx=>{ const p=box(.15,1.4,.25,matEdge); p.position.set(sx,0,0); torso.add(p); });
+  for(let i=-3;i<=3;i++){ const l=box(1.5,.03,.93,matEdge); l.position.set(0,i*.25,.01); torso.add(l); }
+  const sL=cyl(.2,.25,.3,8,matJoint); sL.rotation.z=Math.PI/2; sL.position.set(-.9,.75,0); torso.add(sL);
+  const sR=cyl(.2,.25,.3,8,matJoint); sR.rotation.z=Math.PI/2; sR.position.set(.9,.75,0); torso.add(sR);
+  const belly=box(1.3,.45,.5,matEdge); belly.position.set(0,-.85,.2); torso.add(belly);
+
+  // Head
+  const headGroup = new THREE.Group(); headGroup.position.set(0,1.3,0); torso.add(headGroup);
+  const neck=cyl(.18,.22,.35,8,matJoint); neck.position.set(0,-.18,0); headGroup.add(neck);
+  headGroup.add(box(1,.9,.85,matArmor));
+  const visor=box(.7,.22,.06,matEdge); visor.position.set(0,.1,.46); headGroup.add(visor);
+  const eyeL=box(.16,.1,.08,matEye); eyeL.position.set(-.2,.1,.46); headGroup.add(eyeL);
+  const eyeR=box(.16,.1,.08,matEye); eyeR.position.set(.2,.1,.46); headGroup.add(eyeR);
+  // Extra bloom spheres behind eyes
+  const eGL=sph(.07,matEye); eGL.position.set(-.2,.1,.38); headGroup.add(eGL);
+  const eGR=sph(.07,matEye); eGR.position.set(.2,.1,.38); headGroup.add(eGR);
+  const matEyeBlm=new THREE.MeshBasicMaterial({color:0xff2244,transparent:true,opacity:0});
+  const eBL=sph(.13,matEyeBlm); eBL.position.set(-.2,.1,.28); headGroup.add(eBL);
+  const eBR=sph(.13,matEyeBlm.clone()); eBR.position.set(.2,.1,.28); headGroup.add(eBR);
+  const crest=box(.15,.25,.2,matAccent); crest.position.set(0,.57,0); headGroup.add(crest);
+  [-0.55,0.55].forEach(ex=>{ const e=box(.12,.5,.3,matEdge); e.position.set(ex,.05,0); headGroup.add(e); });
+  const chin=box(.5,.15,.1,matAccent); chin.position.set(0,-.35,.44); headGroup.add(chin);
+
+  // Left arm
+  const armLGroup=new THREE.Group(); armLGroup.position.set(-1.05,.6,0); torso.add(armLGroup);
+  armLGroup.add(box(.55,.55,.45,matArmor));
+  const ssL=box(.1,.4,.1,matAccent); ssL.position.set(0,.45,0); armLGroup.add(ssL);
+  const uAL=new THREE.Group(); uAL.position.set(-.1,-.5,0); armLGroup.add(uAL);
+  uAL.add(box(.38,.7,.35,matArmor));
+  const uALa=box(.12,.65,.36,matAccent); uALa.position.set(.1,0,.01); uAL.add(uALa);
+  const elL=cyl(.16,.16,.22,8,matJoint); elL.rotation.z=Math.PI/2; elL.position.set(0,-.42,0); uAL.add(elL);
+  const fAL=new THREE.Group(); fAL.position.set(0,-.78,0); uAL.add(fAL);
+  fAL.add(box(.32,.65,.3,matArmor));
+  const fALS=box(.08,.6,.31,matGlow); fALS.position.set(-.09,0,.01); fAL.add(fALS);
+  const handLGroup=new THREE.Group(); handLGroup.position.set(0,-.5,0); fAL.add(handLGroup);
+  handLGroup.add(box(.3,.25,.2,matArmor));
+  const fps=[[-0.09,-0.08,-0.06],[0,0,-0.06],[0.09,-0.04,-0.06],[-0.11,0.06,0.04]];
+  fps.forEach(([fx,fy,fz])=>{ const f=box(.06,.2,.07,matEdge); f.position.set(fx,fy-.22,fz); handLGroup.add(f); });
+
+  // Right arm
+  const armRGroup=new THREE.Group(); armRGroup.position.set(1.05,.6,0); torso.add(armRGroup);
+  armRGroup.add(box(.55,.55,.45,matArmor));
+  const ssR=box(.1,.4,.1,matAccent); ssR.position.set(0,.45,0); armRGroup.add(ssR);
+  const uAR=new THREE.Group(); uAR.position.set(.1,-.5,0); armRGroup.add(uAR);
+  uAR.add(box(.38,.7,.35,matArmor));
+  const uARa=box(.12,.65,.36,matPurple); uARa.position.set(-.1,0,.01); uAR.add(uARa);
+  const elR=cyl(.16,.16,.22,8,matJoint); elR.rotation.z=Math.PI/2; elR.position.set(0,-.42,0); uAR.add(elR);
+  const fAR=new THREE.Group(); fAR.position.set(0,-.78,0); uAR.add(fAR);
+  fAR.add(box(.32,.65,.3,matArmor));
+  const cannon=new THREE.Group(); cannon.position.set(0,-.2,.25); fAR.add(cannon);
+  const cBody=cyl(.12,.15,.55,6,matEdge); cBody.rotation.x=Math.PI/2; cannon.add(cBody);
+  const cTip=cyl(.06,.12,.15,6,matGlow); cTip.rotation.x=Math.PI/2; cTip.position.set(0,0,.35); cannon.add(cTip);
+  const handRGroup=new THREE.Group(); handRGroup.position.set(0,-.5,0); fAR.add(handRGroup);
+  handRGroup.add(box(.3,.25,.2,matArmor));
+  fps.forEach(([fx,fy,fz])=>{ const f=box(.06,.2,.07,matEdge); f.position.set(-fx,fy-.22,fz); handRGroup.add(f); });
+
+  // Hips
+  const hips=new THREE.Group(); hips.position.set(0,-1.1,0); torso.add(hips);
+  hips.add(box(1.3,.4,.7,matArmor));
+  const hAL=box(.35,.38,.35,matEdge); hAL.position.set(-.55,-.01,.1); hips.add(hAL);
+  const hAR=box(.35,.38,.35,matEdge); hAR.position.set(.55,-.01,.1); hips.add(hAR);
+
+  // Legs
+  function makeLeg(side) {
+    const sg=new THREE.Group(); sg.position.set(side*.52,-.25,0); hips.add(sg);
+    const th=box(.45,.85,.42,matArmor); th.position.set(0,-.5,0); sg.add(th);
+    const tha=box(.1,.75,.43,side>0?matPurple:matAccent); tha.position.set(side*-.14,-.5,.01); sg.add(tha);
+    const kn=cyl(.2,.22,.25,8,matJoint); kn.position.set(0,-1.04,0); sg.add(kn);
+    const knF=box(.28,.22,.12,matEdge); knF.position.set(0,-1.04,.22); sg.add(knF);
+    const sh=new THREE.Group(); sh.position.set(0,-1.22,0); sg.add(sh);
+    sh.add(box(.38,.72,.38,matArmor));
+    const shS=box(.08,.65,.39,matGlow); shS.position.set(0,0,.01); sh.add(shS);
+    const an=cyl(.15,.18,.18,8,matJoint); an.position.set(0,-.45,.04); sh.add(an);
+    const ft=new THREE.Group(); ft.position.set(0,-.5,.12); sh.add(ft);
+    ft.add(box(.4,.22,.7,matArmor));
+    const to=box(.35,.14,.22,matEdge); to.position.set(0,-.02,.42); ft.add(to);
+    const he=box(.3,.18,.18,matEdge); he.position.set(0,-.02,-.3); ft.add(he);
+  }
+  makeLeg(-1); makeLeg(1);
+
+  // Energy core
+  const coreMat=new THREE.MeshStandardMaterial({color:0x00ffe7,emissive:new THREE.Color(0x00ffe7),emissiveIntensity:0,metalness:.1,roughness:.02});
+  const coreOuter=cyl(.22,.22,.06,6,matAccent); coreOuter.rotation.x=Math.PI/2; coreOuter.position.set(0,.1,.56); torso.add(coreOuter);
+  const coreInner=cyl(.14,.14,.08,6,coreMat); coreInner.rotation.x=Math.PI/2; coreInner.position.set(0,.1,.57); torso.add(coreInner);
+  const matCoreBlm=new THREE.MeshBasicMaterial({color:0x00ffe7,transparent:true,opacity:0});
+  const coreBloom=sph(.2,matCoreBlm); coreBloom.position.set(0,.1,.57); torso.add(coreBloom);
+
+  // Wings / thrusters
+  [-1,1].forEach(side=>{
+    const w=new THREE.Group(); w.position.set(side*.7,.3,-.55); torso.add(w);
+    w.add(box(.08,.9,.6,matEdge));
+    const wa=box(.09,.75,.08,matGlow); wa.position.set(0,0,.28); w.add(wa);
+    const thr=cyl(.1,.14,.25,6,matJoint); thr.position.set(0,-.52,0); w.add(thr);
+    const thrG=cyl(.07,.07,.22,6,matGlow); thrG.position.set(0,-.52,0); w.add(thrG);
+  });
+
+  root.position.set(.3,-.5,0);
+  root.scale.setScalar(.9);
+
+  // ── LIGHTS — Cinematic 3-point + HDR bounce ──────────────────
+  const ambientLight = new THREE.AmbientLight(0x020b1a, .3);
+  scene.add(ambientLight);
+  const hemiLight = new THREE.HemisphereLight(0x001528, 0x000000, .65);
+  scene.add(hemiLight);
+
+  // KEY — front/top spot
+  const keyLight = new THREE.SpotLight(0x6699ff, 0.);
+  keyLight.position.set(1.5, 8, 5);
+  keyLight.angle = .33; keyLight.penumbra = .6; keyLight.decay = 1.8; keyLight.castShadow = true;
+  keyLight.shadow.mapSize.set(2048,2048);
+  scene.add(keyLight);
+
+  // RIM — left blue
+  const rimLight = new THREE.DirectionalLight(0x0044cc, .75);
+  rimLight.position.set(-4, 3, -3);
+  scene.add(rimLight);
+  // RIM2 — right purple
+  const rimLight2 = new THREE.DirectionalLight(0x5500aa, .55);
+  rimLight2.position.set(4, 2, -2);
+  scene.add(rimLight2);
+  // FILL — soft frontal
+  const fillLight = new THREE.DirectionalLight(0x001188, .3);
+  fillLight.position.set(0,-1,5);
+  scene.add(fillLight);
+
+  // Point lights
+  const eyeLight  = new THREE.PointLight(0xff2244, 0., 5);  eyeLight.position.set(0,1.8,1.5); scene.add(eyeLight);
+  const coreLight = new THREE.PointLight(0x00ffe7, 0., 3.5); coreLight.position.set(.3,.5,1.5); scene.add(coreLight);
+  const footLight = new THREE.PointLight(0x4400ff, .4, 7);  footLight.position.set(0,-3,0); scene.add(footLight);
+  const burstLight= new THREE.PointLight(0xff4400, 0., 12); burstLight.position.set(0,1,2); scene.add(burstLight);
+
+  // ── GROUND ────────────────────────────────────────────────────
+  const glowGeo=new THREE.CircleGeometry(2.5,64);
+  const glowMt=new THREE.MeshBasicMaterial({color:0x0033aa,transparent:true,opacity:.14,side:THREE.DoubleSide});
+  const gMesh=new THREE.Mesh(glowGeo,glowMt); gMesh.rotation.x=-Math.PI/2; gMesh.position.y=-2.2; scene.add(gMesh);
+
+  // Concentric rings
+  [2.3,3.2,4.5].forEach((r,i)=>{
+    const rg=new THREE.RingGeometry(r-.05,r+.05,96);
+    const rm=new THREE.MeshBasicMaterial({color:i===0?0x0055ff:i===1?0x003388:0x001144,transparent:true,opacity:.35-i*.08,side:THREE.DoubleSide});
+    const ring=new THREE.Mesh(rg,rm); ring.rotation.x=-Math.PI/2; ring.position.y=-2.19-i*.002; scene.add(ring);
+  });
+
+  const scanRingGeo=new THREE.RingGeometry(2.65,2.78,96);
+  const scanRingMat=new THREE.MeshBasicMaterial({color:0x00c8ff,transparent:true,opacity:.5,side:THREE.DoubleSide});
+  const scanRing=new THREE.Mesh(scanRingGeo,scanRingMat); scanRing.rotation.x=-Math.PI/2; scanRing.position.y=-2.18; scene.add(scanRing);
+
+  // ── ENERGY ORBS — Enhanced ────────────────────────────────────
+  const orbs=[];
+  const orbClrs=[0x0088ff,0xff2244,0x8800ff,0x00ffe7,0xff8800,0x00ff88];
+  for(let i=0;i<8;i++){
+    const om=new THREE.MeshStandardMaterial({color:orbClrs[i%6],emissive:new THREE.Color().setHex(orbClrs[i%6]),emissiveIntensity:1.2,transparent:true,opacity:.8,metalness:.1,roughness:0});
+    const o=new THREE.Mesh(new THREE.SphereGeometry(.055,12,12),om);
+    const angle=(i/8)*Math.PI*2;
+    o.position.set(Math.cos(angle)*2.2,-.5+Math.sin(i*1.1)*1.5,Math.sin(angle)*2.2);
+    o._angle=angle; o._speed=.0022+Math.random()*.004; o._ySpeed=.006+Math.random()*.005;
+    o._yOffset=i*1.05; o._r=1.8+Math.random()*.6;
+    scene.add(o);
+    if(i<4){ const ol=new THREE.PointLight(orbClrs[i],.0,2.2); o.userData.light=ol; scene.add(ol); }
+    orbs.push(o);
+  }
+
+  // ── SCROLL STATE ─────────────────────────────────────────────
+  let scrollProgress=0;
+  let targetCamX=.3, targetCamY=2, targetCamZ=9;
+  let targetLookX=0, targetLookY=1.5;
+  let targetArmLAngle=0, targetArmRAngle=0;
+  let targetHeadRot=0;
+  let eyeGlowInt=0, coreGlowInt=0, keyLightInt=0;
+  let camOrbitAngle=0, orbitMode=false, activationMode=false;
+
+  window.addEventListener('scroll', () => {
+    const maxS = document.body.scrollHeight - window.innerHeight;
+    scrollProgress = window.scrollY / maxS;
+    const p = scrollProgress;
+
+    if (p < .2) {
+      const t=p/.2;
+      root.position.y=-2+t*1.5; root.rotation.y=-.4+t*.4;
+      ambientLight.intensity=.1+t*.4;
+      orbitMode=false; activationMode=false;
+      eyeGlowInt=0; coreGlowInt=0; keyLightInt=0;
+      targetCamZ=9; targetCamX=.3; targetCamY=2;
+      eyeSoundPlayed=false; activationSoundPlayed=false;
+    } else if (p < .4) {
+      const t=(p-.2)/.2;
+      root.position.y=-.5;
+      eyeGlowInt=t*4.2; coreGlowInt=t*2.4; keyLightInt=t*1.5;
+      targetHeadRot=Math.sin(t*Math.PI)*.18;
+      orbitMode=false;
+      targetCamZ=6.5; targetCamX=-.6; targetCamY=2.6;
+      if(!eyeSoundPlayed && t>.35 && audioOn){ playEyeSound(); eyeSoundPlayed=true; }
+    } else if (p < .6) {
+      const t=(p-.4)/.2;
+      orbitMode=true; camOrbitAngle=t*Math.PI*1.5;
+      eyeGlowInt=4.2; coreGlowInt=2.8; keyLightInt=1.8;
+    } else if (p < .8) {
+      const t=(p-.6)/.2;
+      orbitMode=false;
+      targetArmLAngle=-.4-t*.55; targetArmRAngle=.4+t*.55;
+      targetHeadRot=Math.sin(t*Math.PI*2)*.32;
+      eyeGlowInt=4.8; coreGlowInt=4; keyLightInt=2.4;
+      targetCamX=.9; targetCamZ=5.8; targetCamY=1.7;
+    } else {
+      const t=(p-.8)/.2;
+      activationMode=true; orbitMode=false;
+      targetArmLAngle=-1; targetArmRAngle=1;
+      eyeGlowInt=7.5; coreGlowInt=5.8; keyLightInt=3.5;
+      targetCamX=0; targetCamZ=7; targetCamY=1.5;
+      if(!activationSoundPlayed && t>.2 && audioOn){ playActivationSound(); activationSoundPlayed=true; }
+    }
+
+    document.getElementById('progress-bar').style.width=(p*100)+'%';
+    window.scrollY>50
+      ? document.getElementById('scroll-hint').classList.add('hidden')
+      : document.getElementById('scroll-hint').classList.remove('hidden');
+  });
+
+  let mouseX=0, mouseY=0;
+  document.addEventListener('mousemove', e=>{
+    mouseX=(e.clientX/window.innerWidth-.5)*2;
+    mouseY=(e.clientY/window.innerHeight-.5)*2;
+  });
+
+  // ── RENDER LOOP ───────────────────────────────────────────────
+  const lookTarget=new THREE.Vector3(0,1.5,0);
+  let time=0;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    time += .016;
+    const t = time;
+
+    // Float
+    root.position.y += Math.sin(t*.65)*.00055;
+
+    // Mouse sway
+    if (!activationMode) root.rotation.y += (mouseX*.28 - root.rotation.y)*.026;
+    else                  root.rotation.y += (mouseX*.14 - root.rotation.y)*.017;
+    root.rotation.x += (-mouseY*.07 - root.rotation.x)*.017;
+
+    // Head
+    headGroup.rotation.y += (targetHeadRot + mouseX*.17 - headGroup.rotation.y)*.036;
+
+    // Arms
+    armLGroup.rotation.x += (targetArmLAngle - armLGroup.rotation.x)*.036;
+    armRGroup.rotation.x += (targetArmRAngle - armRGroup.rotation.x)*.036;
+
+    // Finger wiggle in s4
+    if (scrollProgress > .6 && scrollProgress < .8) {
+      const wt=(scrollProgress-.6)/.2;
+      handLGroup.rotation.x = Math.sin(t*4.5)*.22*wt;
+      handRGroup.rotation.x = Math.sin(t*4.5+1)*.22*wt;
+    }
+
+    // Eye glow + flicker
+    matEye.emissiveIntensity += (eyeGlowInt - matEye.emissiveIntensity)*.042;
+    eyeLight.intensity += (eyeGlowInt*.7 - eyeLight.intensity)*.042;
+    if (eyeGlowInt>.5) {
+      matEye.emissiveIntensity *= .95 + Math.random()*.05;
+      const blmOp=(matEye.emissiveIntensity/7.5)*.65;
+      eBL.material.opacity=blmOp; eBR.material.opacity=blmOp;
+    } else { eBL.material.opacity=0; eBR.material.opacity=0; }
+
+    // Core glow
+    coreMat.emissiveIntensity += (coreGlowInt - coreMat.emissiveIntensity)*.036;
+    coreLight.intensity += (coreGlowInt - coreLight.intensity)*.036;
+    matGlow.emissiveIntensity = coreGlowInt*.26;
+    coreBloom.material.opacity = (coreMat.emissiveIntensity/5.8)*.55;
+
+    // Key light
+    keyLight.intensity += (keyLightInt - keyLight.intensity)*.036;
+
+    // Scan ring
+    scanRing.position.y = -2.18 + Math.sin(t*1.7)*.065;
+    scanRingMat.opacity = .22 + Math.sin(t*1.7)*.18;
+    scanRing.rotation.z += .0045;
+
+    // Core outer
+    coreOuter.rotation.z = t*.55;
+
+    // Orbs
+    orbs.forEach((o,i)=>{
+      o._angle += o._speed;
+      const r = o._r + Math.sin(t*.5+i)*.28;
+      o.position.set(.3+Math.cos(o._angle)*r, -.5+Math.sin(t*o._ySpeed+o._yOffset)*1.5, Math.sin(o._angle)*r);
+      o.material.opacity = .32 + Math.sin(t*1.8+i*.7)*.28;
+      if (o.userData.light) { o.userData.light.position.copy(o.position); o.userData.light.intensity=o.material.opacity*coreGlowInt*.14; }
+    });
+
+    // Camera
+    if (orbitMode) {
+      const cr=7;
+      const cxp=Math.sin(camOrbitAngle)*cr+.3, czp=Math.cos(camOrbitAngle)*cr;
+      camera.position.x += (cxp-camera.position.x)*.032;
+      camera.position.z += (czp-camera.position.z)*.032;
+      camera.position.y += (2.2-camera.position.y)*.032;
+    } else {
+      camera.position.x += (targetCamX-camera.position.x)*.026;
+      camera.position.y += (targetCamY-camera.position.y)*.026;
+      camera.position.z += (targetCamZ-camera.position.z)*.026;
+    }
+    lookTarget.x += (0-lookTarget.x)*.036;
+    lookTarget.y += (1.5-lookTarget.y)*.036;
+    camera.lookAt(lookTarget);
+
+    // Activation lights
+    if (activationMode) {
+      rimLight.intensity  = 1.7 + Math.sin(t*1.4)*.55;
+      rimLight2.intensity = 1.1 + Math.cos(t*1.9)*.55;
+      burstLight.intensity= .9 + Math.sin(t*2.8)*.65;
+      const hue=(t*.07)%1;
+      rimLight.color.setHSL(hue,1,.55);
+      burstLight.color.setHSL((hue+.5)%1,1,.55);
+    } else {
+      rimLight.intensity  += (.7-rimLight.intensity)*.026;
+      rimLight2.intensity += (.5-rimLight2.intensity)*.026;
+      burstLight.intensity+= (0-burstLight.intensity)*.04;
+    }
+
+    // ── POST-PROCESSING PIPELINE ─────────────────────────────────
+    // 1. Render scene to main RT
+    renderer.setRenderTarget(rtMain);
+    renderer.render(scene, camera);
+
+    // 2. H-blur (half res)
+    blurHMat.uniforms.tDiffuse.value = rtMain.texture;
+    renderer.setRenderTarget(rtBlurH);
+    renderer.render(blurHScene, orthoCamera);
+
+    // 3. V-blur (half res)
+    blurVMat.uniforms.tDiffuse.value = rtBlurH.texture;
+    renderer.setRenderTarget(rtBlurV);
+    renderer.render(blurVScene, orthoCamera);
+
+    // 4. Composite to screen
+    renderer.setRenderTarget(null);
+    compMat.uniforms.tBase.value  = rtMain.texture;
+    compMat.uniforms.tBloom.value = rtBlurV.texture;
+    const bStr = .3 + (eyeGlowInt/7.5)*.55 + (coreGlowInt/5.8)*.3;
+    compMat.uniforms.bloomStr.value = bStr;
+    compMat.uniforms.time.value = t;
+    renderer.render(compScene, orthoCamera);
+  }
+  animate();
+}
+
+// ── SCROLL ANIMATIONS ─────────────────────────────────────────
+function initScrollAnimations() {
+  const els = document.querySelectorAll('[data-anim]');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold:.22, rootMargin:'0px 0px -50px 0px' });
+  els.forEach(el => obs.observe(el));
+}
+
+function initAll() {
+  initParticles();
+  initThree();
+  initScrollAnimations();
+}
+</script>
+</body>
+</html>

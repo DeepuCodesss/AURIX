@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "PhantomShield-X Web Security",
+  "version": "1.0",
+  "description": "Automatically scans URLs for threats and phishing.",
+  "permissions": [
+    "tabs",
+    "webNavigation",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

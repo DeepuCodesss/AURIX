@@ -1,0 +1,31 @@
+# Secrets & local config
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.local
+
+# Logs & OS
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Local security-demo artifacts — keep out of public GitHub
+BACKEND/invoice_urgent.exe
+BACKEND/mimikatz_dump.txt
+BACKEND/ransomware_trigger.txt

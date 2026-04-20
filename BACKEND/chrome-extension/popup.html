@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 320px;
+      margin: 0;
+      padding: 0;
+      background-color: #09090b;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .header {
+      background: rgba(14, 165, 233, 0.1);
+      border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header img {
+      width: 24px;
+      height: 24px;
+    }
+    .header h2 {
+      margin: 0;
+      font-size: 16px;
+      color: #38bdf8;
+    }
+    .content {
+      padding: 20px;
+      text-align: center;
+    }
+    .status {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .status.safe {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+    .status.scanning {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+    .status.danger {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background: #0284c7;
+    }
+    .footer {
+      font-size: 11px;
+      color: #71717a;
+      text-align: center;
+      padding: 10px;
+      border-top: 1px solid #27272a;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Shield-X Active</h2>
+  </div>
+  <div class="content">
+    <div id="statusBox" class="status scanning">Scanning current tab...</div>
+    <p id="detailsText" style="font-size: 12px; color: #a1a1aa; margin-top: 10px;"></p>
+    <button class="btn" id="btnDashboard">Open Admin Console</button>
+  </div>
+  <div class="footer">PhantomShield-X Endpoint Security</div>
+  <script src="popup.js"></script>
+</body>
+</html>
