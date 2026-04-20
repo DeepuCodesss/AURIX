@@ -166,6 +166,7 @@ def start_input_listeners():
 # Set before running (or in Windows env): AURIX_SERVER = your FastAPI base URL (no trailing /)
 # Tray "Open Dashboard": AURIX_DASHBOARD_URL = your deployed Vite/React site URL
 # CLI: python agent.py --server https://api.example.com
+AGENT_VERSION = "1.0.0"
 DEFAULT_SERVER = os.environ.get("AURIX_SERVER", "https://aurix-rgpt.onrender.com").rstrip("/")
 DASHBOARD_URL = os.environ.get("AURIX_DASHBOARD_URL", "https://aurix-sepia.vercel.app").rstrip("/")
 HEARTBEAT_INTERVAL = 5  # seconds
@@ -723,6 +724,49 @@ async def usb_monitor(client: httpx.AsyncClient, server: str, device_id: str):
             pass
         await asyncio.sleep(5)
 
+async def check_for_updates(client: httpx.AsyncClient, server: str):
+    """Periodically check if a newer version of the agent exists."""
+    while True:
+        try:
+            resp = await client.get(f"{server}/agent/version", timeout=10)
+            if resp.status_code == 200:
+                data = resp.json()
+                if data.get("version") > AGENT_VERSION:
+                    logging.info(f"New version {data['version']} found. Initiating update...")
+                    await perform_update(client, data.get("download_url"))
+        except Exception:
+            pass
+        await asyncio.sleep(60)
+
+async def perform_update(client: httpx.AsyncClient, url: str):
+    try:
+        if not url: return
+        resp = await client.get(url, follow_redirects=True, timeout=60)
+        if resp.status_code == 200:
+            new_exe = os.path.join(os.path.expanduser("~"), ".aurix", "AURIX-Agent-New.exe")
+            with open(new_exe, "wb") as f:
+                f.write(resp.content)
+            
+            # Create update batch script
+            current_exe = sys.executable if getattr(sys, 'frozen', False) else os.path.abspath(__file__)
+            bat_path = os.path.join(os.path.expanduser("~"), ".aurix", "update.bat")
+            
+            with open(bat_path, "w") as f:
+                f.write('@echo off\\n')
+                f.write('timeout /t 3 /nobreak > NUL\\n')
+                f.write('taskkill /f /im "AURIX-Agent.exe" > NUL 2>&1\\n')
+                f.write(f'move /y "{new_exe}" "{current_exe}" > NUL\\n')
+                f.write(f'start "" "{current_exe}"\\n')
+                f.write('del "%~f0"\\n')
+            
+            # Run batch script and exit self
+            creationflags = subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+            subprocess.Popen([bat_path], shell=True, creationflags=creationflags)
+            logging.info("Update downloaded. Restarting...")
+            os._exit(0)
+    except Exception as e:
+        logging.error(f"Update failed: {e}")
+
 async def main(server: str):
     device_id = get_or_create_device_id()
 
@@ -761,6 +805,9 @@ async def main(server: str):
         
         # Start USB Monitor
         asyncio.create_task(usb_monitor(client, server, device_id))
+
+        # Start Auto-Updater
+        asyncio.create_task(check_for_updates(client, server))
 
         # Heartbeat loop
         logging.info(f"Heartbeat active (every {HEARTBEAT_INTERVAL}s)")

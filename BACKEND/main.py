@@ -173,6 +173,14 @@ async def agent_get_commands(device_id: str):
         return {"commands": cmds}
     return {"commands": []}
 
+@app.get("/agent/version")
+async def agent_version():
+    """Agent polls this to check if there is a newer version available."""
+    return {
+        "version": "1.0.0",
+        "download_url": "https://aurix-sepia.vercel.app/AURIX-Agent.exe"
+    }
+
 class ThreatPayload(BaseModel):
     device_id: str
     threats: List[dict]
