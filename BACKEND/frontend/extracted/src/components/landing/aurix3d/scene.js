@@ -23,6 +23,7 @@ export class SceneManager {
         this.blurScale = window.innerWidth < 768 ? 0.3 : 0.42;
         this.frameCount = 0;
         this.shadowUpdateInterval = 4;
+        this.disposed = false;
 
         this.init();
     }
@@ -144,6 +145,7 @@ export class SceneManager {
     }
 
     onResize() {
+        if (this.disposed || !this.camera || !this.renderer) return;
         const w = Math.max(1, Math.round(window.innerWidth * this.renderScale));
         const h = Math.max(1, Math.round(window.innerHeight * this.renderScale));
         const blurW = Math.max(1, Math.round(w * this.blurScale));
@@ -160,6 +162,7 @@ export class SceneManager {
     }
 
     render(time, bloomIntensity) {
+        if (this.disposed || !this.renderer) return;
         this.frameCount += 1;
         this.renderer.shadowMap.needsUpdate = this.frameCount % this.shadowUpdateInterval === 0;
         this.renderer.setRenderTarget(this.renderTargets.main);
@@ -179,14 +182,25 @@ export class SceneManager {
     }
 
     dispose() {
+        if (this.disposed) return;
+        this.disposed = true;
+
         window.removeEventListener('resize', this.handleResize);
-        this.renderer.dispose();
-        this.renderTargets.main.dispose();
-        this.renderTargets.blurH.dispose();
-        this.renderTargets.blurV.dispose();
-        this.quadGeo.dispose();
-        this.postMaterials.blurH.dispose();
-        this.postMaterials.blurV.dispose();
-        this.postMaterials.composite.dispose();
+        this.renderer?.dispose();
+        this.renderTargets?.main?.dispose?.();
+        this.renderTargets?.blurH?.dispose?.();
+        this.renderTargets?.blurV?.dispose?.();
+        this.quadGeo?.dispose?.();
+        this.postMaterials?.blurH?.dispose?.();
+        this.postMaterials?.blurV?.dispose?.();
+        this.postMaterials?.composite?.dispose?.();
+
+        this.renderer = null;
+        this.scene = null;
+        this.camera = null;
+        this.lights = {};
+        this.renderTargets = {};
+        this.postScenes = {};
+        this.postMaterials = {};
     }
 }

@@ -28,6 +28,7 @@ export class AurixLandingExperience {
         this.desiredLookTarget = new THREE.Vector3();
 
         this.cursor = { cx: -100, cy: -100, rx: -100, ry: -100 };
+        this.destroyed = false;
 
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleFirstInteraction = this.handleFirstInteraction.bind(this);
@@ -51,6 +52,7 @@ export class AurixLandingExperience {
         this.interaction = new InteractionManager(this.scene, this.robot, this.audio, this.root);
 
         await this.robot.load();
+        if (this.destroyed) return;
 
         this.setupEventListeners();
         this.initHUD();
@@ -113,6 +115,7 @@ export class AurixLandingExperience {
 
     handleEnterApp(event) {
         event.preventDefault();
+        if (this.destroyed) return;
         this.onEnter?.();
     }
 
@@ -157,6 +160,7 @@ export class AurixLandingExperience {
     }
 
     animate(now) {
+        if (this.destroyed) return;
         const rawDt = this.lastTime ? (now - this.lastTime) / 1000 : 1 / 60;
         const dt = Math.min(Math.max(rawDt, 1 / 120), 1 / 24);
         this.lastTime = now;
@@ -230,6 +234,9 @@ export class AurixLandingExperience {
     }
 
     destroy() {
+        if (this.destroyed) return;
+        this.destroyed = true;
+
         if (this.frameId) {
             cancelAnimationFrame(this.frameId);
             this.frameId = null;
@@ -241,10 +248,16 @@ export class AurixLandingExperience {
         this.cleanups.forEach((cleanup) => cleanup());
         this.cleanups = [];
 
-        this.interaction?.destroy();
-        this.particles?.destroy();
-        this.scene?.dispose();
-        this.audio?.destroy();
-        this.robot?.dispose?.();
+        try { this.interaction?.destroy(); } catch {}
+        try { this.particles?.destroy(); } catch {}
+        try { this.scene?.dispose(); } catch {}
+        try { this.audio?.destroy(); } catch {}
+        try { this.robot?.dispose?.(); } catch {}
+
+        this.interaction = null;
+        this.particles = null;
+        this.scene = null;
+        this.audio = null;
+        this.robot = null;
     }
 }
