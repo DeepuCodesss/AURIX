@@ -33,12 +33,8 @@ export function useAlerts(incidents: Incident[]) {
   };
 
   useEffect(() => {
-    const hasHighThreat = incidents.some((incident) => incident.risk_score > 70);
-    document.title = hasHighThreat ? '🚨 ALERT — AURIX' : DEFAULT_TITLE;
-
-    return () => {
-      document.title = DEFAULT_TITLE;
-    };
+    // Alert title management (simplified for presentation)
+    document.title = DEFAULT_TITLE;
   }, [incidents]);
 
   useEffect(() => {
@@ -92,7 +88,7 @@ export function useAlerts(incidents: Incident[]) {
       );
       const alert: AURIXAlert = {
         id: incidentKey,
-        title: 'HIGH THREAT DETECTED',
+        title: 'Security Anomaly Detected',
         description: `${sourceIP} • ${processName}`,
         sourceIP,
         processName,
