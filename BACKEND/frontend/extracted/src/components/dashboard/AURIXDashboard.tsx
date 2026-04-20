@@ -86,7 +86,9 @@ const getScoreBand = (score: number) => {
 
 const getIncidentDate = (incident: Incident) => {
   if (incident.log?.datetime) {
-    return new Date(incident.log.datetime);
+    const raw = incident.log.datetime;
+    const hasTimezone = /(?:Z|[+-]\d{2}:\d{2})$/.test(raw);
+    return new Date(hasTimezone ? raw : `${raw}Z`);
   }
 
   return new Date(incident.timestamp * 1000);
@@ -127,7 +129,7 @@ const getRelativeTime = (timestamp: Date) => {
 };
 
 const formatChartTime = (timestamp: string) =>
-  new Date(timestamp).toLocaleTimeString('en-US', {
+  new Date(/(?:Z|[+-]\d{2}:\d{2})$/.test(timestamp) ? timestamp : `${timestamp}Z`).toLocaleTimeString('en-US', {
     hour12: false,
     hour: '2-digit',
     minute: '2-digit',

@@ -20,7 +20,15 @@ import { usePolling } from '@/hooks/usePolling';
 import { ActivityLog, Incident, RecycleBinItem, Severity, Threat } from './types';
 
 const getIncidentTimestamp = (incident: Incident) =>
-  incident.log?.datetime || new Date(incident.timestamp * 1000).toISOString();
+  (() => {
+    const raw = incident.log?.datetime;
+    if (typeof raw === 'string' && raw.trim()) {
+      // Backend often sends naive ISO strings; treat them as UTC for correct local conversion.
+      const hasTimezone = /(?:Z|[+-]\d{2}:\d{2})$/.test(raw);
+      return hasTimezone ? raw : `${raw}Z`;
+    }
+    return new Date(incident.timestamp * 1000).toISOString();
+  })();
 
 const getIncidentSeverity = (incident: Incident): Severity => {
   if (incident.risk_score >= 90) return 'critical';

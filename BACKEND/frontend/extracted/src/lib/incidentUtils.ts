@@ -37,7 +37,14 @@ export const isHighPriorityIncident = (incident: Incident) => {
 };
 
 export const getIncidentTimestamp = (incident: Incident) =>
-  incident.log?.datetime || new Date(incident.timestamp * 1000).toISOString();
+  (() => {
+    const raw = incident.log?.datetime;
+    if (typeof raw === 'string' && raw.trim()) {
+      const hasTimezone = /(?:Z|[+-]\d{2}:\d{2})$/.test(raw);
+      return hasTimezone ? raw : `${raw}Z`;
+    }
+    return new Date(incident.timestamp * 1000).toISOString();
+  })();
 
 export const getIncidentSource = (incident: Incident) =>
   String(incident.log?.source_ip || incident.log?.device || incident.log?.dest_ip || 'unknown');
