@@ -64,6 +64,20 @@ const emptyStats: IncidentStatsResponse = {
   score_timeline: [],
 };
 
+const normalizeIncidentStats = (value: unknown): IncidentStatsResponse => {
+  if (!value || typeof value !== 'object') return emptyStats;
+  const input = value as Partial<IncidentStatsResponse>;
+  return {
+    total: typeof input.total === 'number' ? input.total : 0,
+    high: typeof input.high === 'number' ? input.high : 0,
+    medium: typeof input.medium === 'number' ? input.medium : 0,
+    low: typeof input.low === 'number' ? input.low : 0,
+    top_ips: Array.isArray(input.top_ips) ? input.top_ips : [],
+    top_processes: Array.isArray(input.top_processes) ? input.top_processes : [],
+    score_timeline: Array.isArray(input.score_timeline) ? input.score_timeline : [],
+  };
+};
+
 const getScoreBand = (score: number) => {
   if (score > 70) return 'high';
   if (score >= 40) return 'medium';
@@ -162,6 +176,9 @@ export const AURIXDashboard: React.FC<AURIXDashboardProps> = ({
     { initialData: emptyStats }
   );
 
+  const safeIncidentStats = normalizeIncidentStats(incidentStats);
+  const safeSourceStats = normalizeIncidentStats(sourceStats);
+
   const feedItems = useMemo(() => incidents.slice(0, 20), [incidents]);
 
   const logsAnalyzedToday = useMemo(() => {
@@ -171,26 +188,26 @@ export const AURIXDashboard: React.FC<AURIXDashboardProps> = ({
 
   const timelineData = useMemo(
     () =>
-      incidentStats.score_timeline.map((point) => ({
+      safeIncidentStats.score_timeline.map((point) => ({
         label: formatChartTime(point.timestamp),
         score: point.score,
       })),
-    [incidentStats.score_timeline]
+    [safeIncidentStats.score_timeline]
   );
 
   const distributionData = useMemo(
     () => [
-      { name: 'HIGH', value: incidentStats.high, color: '#ef4444' },
-      { name: 'MEDIUM', value: incidentStats.medium, color: '#eab308' },
-      { name: 'LOW', value: incidentStats.low, color: '#10b981' },
+      { name: 'HIGH', value: safeIncidentStats.high, color: '#ef4444' },
+      { name: 'MEDIUM', value: safeIncidentStats.medium, color: '#eab308' },
+      { name: 'LOW', value: safeIncidentStats.low, color: '#10b981' },
     ],
-    [incidentStats.high, incidentStats.low, incidentStats.medium]
+    [safeIncidentStats.high, safeIncidentStats.low, safeIncidentStats.medium]
   );
 
-  const topIpData = useMemo(() => sourceStats.top_ips ?? [], [sourceStats.top_ips]);
+  const topIpData = useMemo(() => safeSourceStats.top_ips ?? [], [safeSourceStats.top_ips]);
   const maxProcessCount = useMemo(
-    () => Math.max(...incidentStats.top_processes.map((process) => process.count), 1),
-    [incidentStats.top_processes]
+    () => Math.max(...safeIncidentStats.top_processes.map((process) => process.count), 1),
+    [safeIncidentStats.top_processes]
   );
 
   const lastSyncLabel = systemLastUpdated
@@ -209,7 +226,7 @@ export const AURIXDashboard: React.FC<AURIXDashboardProps> = ({
   const statsCards = [
     {
       title: 'Active Threats',
-      value: incidentStats.high,
+      value: safeIncidentStats.high,
       icon: ShieldAlert,
       accent: 'text-red-500',
       note: systemStats ? `${systemStats.active_connections} live connections monitored` : 'Awaiting telemetry',
@@ -217,14 +234,14 @@ export const AURIXDashboard: React.FC<AURIXDashboardProps> = ({
     },
     {
       title: 'Warnings',
-      value: incidentStats.medium,
+      value: safeIncidentStats.medium,
       icon: TriangleAlert,
       accent: 'text-yellow-500',
       note: systemStats ? `${systemStats.cpu_percent.toFixed(0)}% CPU on host sensor` : 'Threshold watch active',
     },
     {
       title: 'Systems Normal',
-      value: incidentStats.low,
+      value: safeIncidentStats.low,
       icon: ShieldCheck,
       accent: 'text-emerald-500',
       note: systemStats ? `${systemStats.process_count} processes under watch` : 'Behavior baseline steady',
@@ -701,7 +718,7 @@ export const AURIXDashboard: React.FC<AURIXDashboardProps> = ({
               <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-muted-foreground">
                 Total Incidents
               </p>
-              <p className="mt-2 text-4xl font-black">{incidentStats.total}</p>
+              <p className="mt-2 text-4xl font-black">{safeIncidentStats.total}</p>
             </div>
 
             <div className="mt-4 grid grid-cols-3 gap-2">
@@ -724,8 +741,8 @@ export const AURIXDashboard: React.FC<AURIXDashboardProps> = ({
             <CardTitle className="text-lg">Top Suspicious Processes</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-6">
-            {incidentStats.top_processes.length > 0 ? (
-              incidentStats.top_processes.map((process, index) => (
+            {safeIncidentStats.top_processes.length > 0 ? (
+              safeIncidentStats.top_processes.map((process, index) => (
                 <div key={`${process.process_name}-${index}`} className="rounded-2xl border border-white/5 bg-white/[0.03] p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">

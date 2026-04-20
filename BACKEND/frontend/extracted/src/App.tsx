@@ -115,12 +115,14 @@ export default function App() {
     }
   );
 
-  useEffect(() => {
-    setThreats(liveIncidents.map(mapIncidentToThreat));
-    setLogs(liveIncidents.map(mapIncidentToLog));
-  }, [liveIncidents]);
+  const normalizedIncidents = Array.isArray(liveIncidents) ? liveIncidents : [];
 
-  const { alerts, dismissAlert } = useAlerts(view === 'dashboard' ? liveIncidents : []);
+  useEffect(() => {
+    setThreats(normalizedIncidents.map(mapIncidentToThreat));
+    setLogs(normalizedIncidents.map(mapIncidentToLog));
+  }, [normalizedIncidents]);
+
+  const { alerts, dismissAlert } = useAlerts(view === 'dashboard' ? normalizedIncidents : []);
 
   const notifications = useMemo(
     () =>
@@ -202,7 +204,7 @@ export default function App() {
       case 'dashboard':
         return (
           <AURIXDashboard
-            incidents={liveIncidents}
+            incidents={normalizedIncidents}
             refreshIncidents={refreshIncidents}
             onOpenNotifications={() => setIsNotificationsOpen(true)}
           />
@@ -231,7 +233,7 @@ export default function App() {
       default:
         return (
           <AURIXDashboard
-            incidents={liveIncidents}
+            incidents={normalizedIncidents}
             refreshIncidents={refreshIncidents}
             onOpenNotifications={() => setIsNotificationsOpen(true)}
           />
