@@ -224,30 +224,55 @@ export class RobotManager {
     attachEyeDots() {
         this.eyeDots.forEach((eye) => {
             eye.removeFromParent();
-            eye.geometry.dispose();
-            eye.material.dispose();
+            if (eye.geometry) eye.geometry.dispose();
+            if (eye.material) eye.material.dispose();
+            // Also clean up glow children
+            if (eye.children) {
+                eye.children.forEach(c => {
+                    if (c.geometry) c.geometry.dispose();
+                    if (c.material) c.material.dispose();
+                });
+            }
         });
         this.eyeDots = [];
 
         if (!this.bones.head) return;
 
         const makeEye = (x) => {
-            const eye = new THREE.Mesh(
-                new THREE.CircleGeometry(0.12, 32),
+            // Outer glow sphere — always visible on top of all geometry
+            const glow = new THREE.Mesh(
+                new THREE.SphereGeometry(0.10, 16, 16),
                 new THREE.MeshBasicMaterial({
                     color: 0x00f6ff,
-                    side: THREE.DoubleSide,
                     transparent: true,
-                    opacity: 0.9,
+                    opacity: 0.35,
+                    depthTest: false,
+                    depthWrite: false,
                     blending: THREE.AdditiveBlending
                 })
             );
+            glow.renderOrder = 998;
 
-            // Z moved forward to 0.92 so eyes are not stuffed inside the head
-            eye.position.set(x, 0.045, 0.92);
-            eye.renderOrder = 30;
-            this.bones.head.add(eye);
-            this.eyeDots.push(eye);
+            // Inner bright core dot
+            const core = new THREE.Mesh(
+                new THREE.SphereGeometry(0.045, 16, 16),
+                new THREE.MeshBasicMaterial({
+                    color: 0xc9ffff,
+                    depthTest: false,
+                    depthWrite: false
+                })
+            );
+            core.renderOrder = 999;
+
+            // Group them together
+            const eyeGroup = new THREE.Group();
+            eyeGroup.add(glow);
+            eyeGroup.add(core);
+            eyeGroup.position.set(x, 0.045, 0.88);
+            eyeGroup.renderOrder = 999;
+
+            this.bones.head.add(eyeGroup);
+            this.eyeDots.push(eyeGroup);
         };
 
         makeEye(-0.19);
