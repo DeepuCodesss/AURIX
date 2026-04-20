@@ -1,7 +1,7 @@
 """
-PhantomShield X — Device Agent
+AURIX — Device Agent
 Run this on any device you want to monitor.
-It collects real system data and reports to the central PhantomShield backend.
+It collects real system data and reports to the central AURIX backend.
 
 Usage:
     pip install psutil httpx pynput pystray pillow
@@ -24,7 +24,7 @@ import logging
 from datetime import datetime
 
 # ─── Crash-safe logging ───────────────────────────────────────────────────────
-log_dir = os.path.join(os.path.expanduser("~"), ".phantomshield")
+log_dir = os.path.join(os.path.expanduser("~"), ".aurix")
 try:
     os.makedirs(log_dir, exist_ok=True)
 except Exception:
@@ -163,13 +163,13 @@ def start_input_listeners():
     wd.start()
 
 # ─── Configuration ────────────────────────────────────────────────────────────
-# Set before running (or in Windows env): PHANTOMSHIELD_SERVER = your FastAPI base URL (no trailing /)
-# Tray "Open Dashboard": PHANTOMSHIELD_DASHBOARD_URL = your deployed Vite/React site URL
+# Set before running (or in Windows env): AURIX_SERVER = your FastAPI base URL (no trailing /)
+# Tray "Open Dashboard": AURIX_DASHBOARD_URL = your deployed Vite/React site URL
 # CLI: python agent.py --server https://api.example.com
-DEFAULT_SERVER = os.environ.get("PHANTOMSHIELD_SERVER", "http://127.0.0.1:8000").rstrip("/")
-DASHBOARD_URL = os.environ.get("PHANTOMSHIELD_DASHBOARD_URL", "http://127.0.0.1:5173").rstrip("/")
+DEFAULT_SERVER = os.environ.get("AURIX_SERVER", "https://aurix-rgpt.onrender.com").rstrip("/")
+DASHBOARD_URL = os.environ.get("AURIX_DASHBOARD_URL", "https://aurix-sepia.vercel.app").rstrip("/")
 HEARTBEAT_INTERVAL = 5  # seconds
-DEVICE_ID_FILE = os.path.join(os.path.expanduser("~"), ".phantomshield_device_id")
+DEVICE_ID_FILE = os.path.join(os.path.expanduser("~"), ".aurix_device_id")
 
 # ─── Device Identity ──────────────────────────────────────────────────────────
 def get_or_create_device_id() -> str:
@@ -738,7 +738,7 @@ async def main(server: str):
     # Fire up the low-level telemetry trackers
     start_input_listeners()
 
-    logging.info("PhantomShield X Agent started")
+    logging.info("AURIX Agent started")
 
     # Use connection pooling with limits to prevent socket exhaustion
     transport = httpx.AsyncHTTPTransport(
@@ -792,7 +792,7 @@ def set_autorun():
                 exe_path = sys.executable
             else:
                 exe_path = f'"{sys.executable}" "{os.path.abspath(__file__)}"'
-            winreg.SetValueEx(key, "PhantomShieldAgent", 0, winreg.REG_SZ, exe_path)
+            winreg.SetValueEx(key, "AURIXAgent", 0, winreg.REG_SZ, exe_path)
             winreg.CloseKey(key)
             logging.info("Autorun set successfully")
         except Exception as e:
@@ -817,7 +817,7 @@ def run_background_loop(server):
                 logging.critical("Agent gave up after max retries.")
 
 def open_ui():
-    """Opens the web dashboard (PHANTOMSHIELD_DASHBOARD_URL)."""
+    """Opens the web dashboard (AURIX_DASHBOARD_URL)."""
     try:
         import webbrowser
         if DASHBOARD_URL:
@@ -857,12 +857,12 @@ def setup_tray(server):
                 os._exit(0)
                 
             menu = pystray.Menu(
-                pystray.MenuItem('Open PhantomShield Dashboard', on_ui_click, default=True),
+                pystray.MenuItem('Open AURIX Dashboard', on_ui_click, default=True),
                 pystray.Menu.SEPARATOR,
                 pystray.MenuItem('Exit Endpoint Agent', on_quit)
             )
             
-            icon = pystray.Icon("PhantomShield", image, "PhantomShield-X Agent", menu)
+            icon = pystray.Icon("AURIX", image, "AURIX Agent", menu)
             
             global default_icon
             default_icon = icon
@@ -892,11 +892,11 @@ if __name__ == "__main__":
         logging.critical(f"UNHANDLED THREAD EXCEPTION in {args.thread.name}: {args.exc_value}")
     threading.excepthook = _thread_exception_handler
 
-    parser = argparse.ArgumentParser(description="PhantomShield X Device Agent")
+    parser = argparse.ArgumentParser(description="AURIX Device Agent")
     parser.add_argument(
         "--server",
         default=DEFAULT_SERVER,
-        help="Backend API base URL, same host the website uses in VITE_API_URL (default: PHANTOMSHIELD_SERVER or http://127.0.0.1:8000)",
+        help="Backend API base URL, same host the website uses in VITE_API_URL (default: AURIX_SERVER or https://aurix-rgpt.onrender.com)",
     )
     args = parser.parse_args()
 

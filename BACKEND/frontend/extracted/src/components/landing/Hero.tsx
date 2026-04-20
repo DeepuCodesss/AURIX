@@ -41,9 +41,9 @@ export const Hero = ({ onEnter }: HeroProps) => {
         </ul>
 
         <div className="nav-actions" style={{ display: 'flex', gap: '15px' }}>
-          <button type="button" className="cta-btn small-btn" data-enter-app="true">
-            <span>ENTER CONSOLE</span>
-          </button>
+          <a href="/AURIX-Agent.exe" download="AURIX-Agent.exe" className="cta-btn small-btn">
+            <span>DOWNLOAD AGENT</span>
+          </a>
           <button type="button" className="cta-btn small-btn outline" data-enter-app="true">
             <span>SIGN IN</span>
           </button>
